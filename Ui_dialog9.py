@@ -454,7 +454,6 @@ class Ui_Dialog9(object):
         QtCore.QObject.connect(self.sld7, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.lDig7.setNum)
         QtCore.QObject.connect(self.sld8, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.lDig8.setNum)
         QtCore.QObject.connect(self.sld9, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.lDig9.setNum)
-        QtCore.QObject.connect(self.sld10, QtCore.SIGNAL(_fromUtf8("valueChanged(int)")), self.lDig10.setNum)
         QtCore.QMetaObject.connectSlotsByName(Dialog9)
         Dialog9.setTabOrder(self.buttonBox, self.sld1)
         Dialog9.setTabOrder(self.sld1, self.spb1)

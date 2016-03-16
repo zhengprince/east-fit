@@ -392,4 +392,3 @@ if __name__ == "__main__":
     ui.setupUi(Dialog7)
     Dialog7.show()
     sys.exit(app.exec_())
-

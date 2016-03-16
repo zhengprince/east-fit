@@ -435,4 +435,3 @@ if __name__ == "__main__":
     ui.setupUi(Dialog8)
     Dialog8.show()
     sys.exit(app.exec_())
-

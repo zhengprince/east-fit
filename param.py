@@ -1,112 +1,109 @@
 import os
 
 
-class Globalvar5:
-    book = dict(FileName=os.environ.get('HOME'), EfitDir=os.environ.get('HOME'), RhoPsi='rho', Shot=100000, Time=3000,
-                Params=[])
+class GlobalVar5(object):
+    value = dict(Params=[])
 
-    def __init__(self, book):
-        for key in book:
-            Globalvar5.book[key] = book[key]
-
-            # def __call__(self, c):
-            # print 'in Globalvar5 c=', c
-            # for key in c:
-            #     Globalvar5.book[key] = c[key]
-            # print 'in Globalvar5', Globalvar5.book
-            # return Globalvar5.book
-
-
-class Globalvar6:
-    book = dict(FileName=os.environ.get('HOME'), EfitDir=os.environ.get('HOME'), RhoPsi='rho', Shot=100000, Time=3000,
-                Params=[])
-
-    def __init__(self, book):
-        for key in book:
-            Globalvar6.book[key] = book[key]
-        print 'in Globalvar6', '\n', Globalvar6.book
+    def __init__(self, value):
+        for key in value:
+            self.value[key] = value[key]
 
     def __call__(self, c):
         for key in c:
-            Globalvar6.book[key] = c[key]
-        return Globalvar6.book
+            self.value[key] = c[key]
+        return self.value
 
 
-class Globalvar7:
-    book = dict(FileName=os.environ.get('HOME'), EfitDir=os.environ.get('HOME'), RhoPsi='rho', Shot=100000, Time=3000,
-                Params=[])
+class GlobalVar6(object):
+    value = dict(Params=[])
 
-    def __init__(self, book):
-        for key in book:
-            Globalvar7.book[key] = book[key]
-
-            # def __call__(self, c):
-            #     Globalvar7.value = c
-            #     return Globalvar7.value
-
-
-class Globalvar8:
-    book = dict(FileName=os.environ.get('HOME'), EfitDir=os.environ.get('HOME'), RhoPsi='rho', Shot=100000, Time=3000,
-                Params=[])
-
-    def __init__(self, book):
-        for key in book:
-            Globalvar8.book[key] = book[key]
-
-            # def __call__(self, c):
-            #     Globalvar8.value = c
-            #     return Globalvar8.value
-
-
-class Globalvar9:
-    book = dict(FileName=os.environ.get('HOME'), EfitDir=os.environ.get('HOME'), RhoPsi='rho', Shot=100000, Time=3000,
-                Params=[])
-
-    def __init__(self, book):
-        for key in book:
-            Globalvar9.book[key] = book[key]
-        print 'in Globalvar9', '\n', Globalvar9.book
+    def __init__(self, value):
+        for key in value:
+            self.value[key] = value[key]
+        print 'in GlobalVar6', '\n', self.value
 
     def __call__(self, c):
         for key in c:
-            Globalvar9.book[key] = c[key]
-        return Globalvar9.book
+            self.value[key] = c[key]
+        return self.value
 
 
-class Globalvar:
-    book = dict(FileName=os.environ.get('HOME'), EfitDir=os.environ.get('HOME'), RhoPsi='rho', Shot=100000, Time=3000,
+class GlobalVar7(object):
+    value = dict(Params=[])
+
+    def __init__(self, value):
+        for key in value:
+            self.value[key] = value[key]
+
+    def __call__(self, c):
+        GlobalVar7.value = c
+        return self.value
+
+
+class GlobalVar8(object):
+    value = dict(Params=[])
+
+    def __init__(self, value):
+        for key in value:
+            self.value[key] = value[key]
+
+    def __call__(self, c):
+        GlobalVar8.value = c
+        return self.value
+
+
+class GlobalVar9(object):
+    value = dict(Params=[])
+
+    def __init__(self, value):
+        for key in value:
+            self.value[key] = value[key]
+        print 'in GlobalVar9', '\n', self.value
+
+    def __call__(self, c):
+        for key in c:
+            self.value[key] = c[key]
+        return self.value
+
+
+class GlobalVar(object):
+    book = dict(FileName=os.environ.get('HOME'),
+                EfitDir=os.environ.get('HOME'),
+                RhoPsi='rho',
+                Shot=100000,
+                Time=3000,
                 Params=[])
 
     def __init__(self, book):
         for key in book:
-            Globalvar.book[key] = book[key]
-        print 'in Globalvar', '\n', Globalvar.book
+            GlobalVar.book[key] = book[key]
+        print 'in GlobalVar', '\n', GlobalVar.book
 
     def __call__(self, c):
         for key in c:
-            Globalvar.book[key] = c[key]
-        return Globalvar.book
+            GlobalVar.book[key] = c[key]
+        return GlobalVar.book
 
-        # class Globalvar:
+        # class GlobalVar:
         #     c = []
         #
         #     def __init__(self, c):
-        #         Globalvar.c = c
+        #         GlobalVar.c = c
         #
         #     def __call__(self, c):
-        #         Globalvar.c = c
-        #         return Globalvar.c
+        #         GlobalVar.c = c
+        #         return GlobalVar.c
 
 
         # def upDict():
-        #     Globalvar5.value = {'key': 'var'}
-        #     Globalvar6.value = {'key': 'var'}
-        #     Globalvar7.value = {'key': 'var'}
-        #     Globalvar8.value = {'key': 'var'}
-        #     Globalvar9.value = {'key': 'var'}
-        # Globalvar.c = {'key': 'var'}
+        #     GlobalVar5.value = {'key': 'var'}
+        #     GlobalVar6.value = {'key': 'var'}
+        #     GlobalVar7.value = {'key': 'var'}
+        #     GlobalVar8.value = {'key': 'var'}
+        #     GlobalVar9.value = {'key': 'var'}
+        # GlobalVar.c = {'key': 'var'}
 
 #
-# def Globalvar(c):
+# def GlobalVar(c):
 #     c = [c]
 #     return c

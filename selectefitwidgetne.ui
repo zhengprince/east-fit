@@ -10,7 +10,7 @@
     <height>516</height>
    </rect>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <widget class="QFrame" name="frame">
      <property name="frameShape">
@@ -32,12 +32,15 @@
         <property name="text">
          <string>File</string>
         </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item row="0" column="2">
        <widget class="QRadioButton" name="rbMdsPlus">
         <property name="text">
-         <string>MDS+</string>
+         <string>MDS+ Server</string>
         </property>
        </widget>
       </item>
@@ -62,7 +65,7 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QToolButton" name="tbOpen">
+       <widget class="QToolButton" name="tbGFileDir">
         <property name="text">
          <string>...</string>
         </property>
@@ -93,19 +96,25 @@
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QFrame" name="frame_3">
-     <layout class="QGridLayout" name="gridLayout_5">
-      <item row="2" column="0">
-       <widget class="QCheckBox" name="checkBox_2">
+    <widget class="QFrame" name="frame_4">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QRadioButton" name="radioButton_2">
         <property name="text">
-         <string>CheckBox</string>
+         <string>efit_east</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QCheckBox" name="checkBox">
+       <widget class="QRadioButton" name="radioButton">
         <property name="text">
-         <string>CheckBox</string>
+         <string>efitrt_east</string>
         </property>
        </widget>
       </item>
@@ -113,6 +122,26 @@
     </widget>
    </item>
    <item row="3" column="0">
+    <widget class="QFrame" name="frame_3">
+     <layout class="QGridLayout" name="gridLayout_5">
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="diagnostics2">
+        <property name="text">
+         <string>Thomson scattering(TS)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="diagnostics1">
+        <property name="text">
+         <string>Reflectometry(ReflJ)</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="0">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -120,7 +149,7 @@
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>321</height>
+       <height>257</height>
       </size>
      </property>
     </spacer>
@@ -136,8 +165,8 @@
    <slot>show()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>188</x>
-     <y>25</y>
+     <x>305</x>
+     <y>34</y>
     </hint>
     <hint type="destinationlabel">
      <x>168</x>
@@ -152,12 +181,12 @@
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>192</x>
-     <y>25</y>
+     <x>305</x>
+     <y>34</y>
     </hint>
     <hint type="destinationlabel">
-     <x>45</x>
-     <y>176</y>
+     <x>54</x>
+     <y>240</y>
     </hint>
    </hints>
   </connection>
@@ -168,11 +197,11 @@
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>352</x>
-     <y>28</y>
+     <x>451</x>
+     <y>34</y>
     </hint>
     <hint type="destinationlabel">
-     <x>316</x>
+     <x>268</x>
      <y>52</y>
     </hint>
    </hints>
@@ -184,12 +213,44 @@
    <slot>show()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>368</x>
-     <y>30</y>
+     <x>451</x>
+     <y>34</y>
     </hint>
     <hint type="destinationlabel">
-     <x>375</x>
-     <y>176</y>
+     <x>191</x>
+     <y>240</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rbFile</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>frame_4</receiver>
+   <slot>hide()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>259</x>
+     <y>23</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>213</x>
+     <y>129</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rbMdsPlus</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>frame_4</receiver>
+   <slot>show()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>430</x>
+     <y>26</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>414</x>
+     <y>122</y>
     </hint>
    </hints>
   </connection>
