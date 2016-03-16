@@ -82,7 +82,7 @@ class MplCanvas(FigureCanvas):
         self.draw()
 
 
-def import_data(par):
+def import_data(value, par):
     global rhoData
     shot = par['Shot']
     time = par['Time']
@@ -153,7 +153,7 @@ class MplCanvasWrapper(QtGui.QWidget):
                                    [[0, 1000], [0, 1000], [0, 3000], [0, 1000], [0, 1000], [0, 1000], [-100, 100]],
                                    [0, 0, 0, 2, 2, 2]]
 
-        rho_data = import_data(par)
+        rho_data = import_data(value, par)
 
         shift_te = value['Params'][0][-1] / 1000.
         c = [i / 1000. for i in value['Params'][0][:-1]]
