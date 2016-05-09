@@ -6,11 +6,24 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>471</width>
+    <width>473</width>
     <height>516</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
+   <item row="4" column="0">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>87</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
    <item row="0" column="0">
     <widget class="QFrame" name="frame">
      <property name="frameShape">
@@ -50,45 +63,108 @@
    <item row="1" column="0">
     <widget class="QFrame" name="frame_2">
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Gfile Dir:</string>
-        </property>
-       </widget>
+      <item row="0" column="0" rowspan="2">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QRadioButton" name="rbRZMap">
+          <property name="text">
+           <string>RZ Map</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rbRhoMap">
+          <property name="text">
+           <string>Rho Map</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rbPsiMap">
+          <property name="text">
+           <string>Psi Map</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="leGFileDir">
-        <property name="dragEnabled">
-         <bool>true</bool>
+      <item row="0" column="1" rowspan="2">
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
         </property>
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QToolButton" name="tbGFileDir">
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="leDataDir">
-        <property name="dragEnabled">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Data Dir:</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="lGFileDir">
+          <property name="text">
+           <string>GFile Dir:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="leGFileDir">
+          <property name="dragEnabled">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="tbGFileDir">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item row="1" column="2">
-       <widget class="QToolButton" name="tbData">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QLabel" name="lDataDir">
+          <property name="text">
+           <string>Data  Dir:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="leDataDir">
+          <property name="dragEnabled">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="tbData">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QFrame" name="frame_3">
+     <layout class="QGridLayout" name="gridLayout_5">
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="diagnostics2">
         <property name="text">
-         <string>...</string>
+         <string>Thomson (Core)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="diagnostics1">
+        <property name="text">
+         <string>Reflectometry</string>
         </property>
        </widget>
       </item>
@@ -103,56 +179,138 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QRadioButton" name="radioButton_2">
-        <property name="text">
-         <string>efit_east</string>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QGroupBox" name="groupBox">
+        <property name="title">
+         <string>Shot</string>
         </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <widget class="QSpinBox" name="spbShot">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximum">
+            <number>100000</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QPushButton" name="bUpdate">
+           <property name="text">
+            <string>Update</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QRadioButton" name="radioButton">
-        <property name="text">
-         <string>efitrt_east</string>
+      <item>
+       <layout class="QVBoxLayout" name="treeLayout">
+        <property name="spacing">
+         <number>0</number>
         </property>
-       </widget>
+        <item>
+         <widget class="QLabel" name="lTree">
+          <property name="frameShape">
+           <enum>QFrame::Panel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <property name="text">
+           <string>Tree</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QListWidget" name="listTree">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::Panel</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="timeLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="lTime">
+          <property name="frameShape">
+           <enum>QFrame::Panel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <property name="text">
+           <string>Time</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QListWidget" name="listTime">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>120</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::Panel</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>34</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QFrame" name="frame_3">
-     <layout class="QGridLayout" name="gridLayout_5">
-      <item row="2" column="0">
-       <widget class="QCheckBox" name="diagnostics2">
-        <property name="text">
-         <string>Thomson scattering(TS)</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="diagnostics1">
-        <property name="text">
-         <string>Reflectometry(ReflJ)</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>257</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>
@@ -165,7 +323,7 @@
    <slot>show()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>305</x>
+     <x>248</x>
      <y>34</y>
     </hint>
     <hint type="destinationlabel">
@@ -181,12 +339,12 @@
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>305</x>
+     <x>224</x>
      <y>34</y>
     </hint>
     <hint type="destinationlabel">
-     <x>54</x>
-     <y>240</y>
+     <x>224</x>
+     <y>410</y>
     </hint>
    </hints>
   </connection>
@@ -197,12 +355,12 @@
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>451</x>
+     <x>340</x>
      <y>34</y>
     </hint>
     <hint type="destinationlabel">
-     <x>268</x>
-     <y>52</y>
+     <x>340</x>
+     <y>59</y>
     </hint>
    </hints>
   </connection>
@@ -213,12 +371,12 @@
    <slot>show()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>451</x>
+     <x>423</x>
      <y>34</y>
     </hint>
     <hint type="destinationlabel">
-     <x>191</x>
-     <y>240</y>
+     <x>423</x>
+     <y>410</y>
     </hint>
    </hints>
   </connection>
@@ -229,12 +387,12 @@
    <slot>hide()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>259</x>
-     <y>23</y>
+     <x>195</x>
+     <y>24</y>
     </hint>
     <hint type="destinationlabel">
-     <x>213</x>
-     <y>129</y>
+     <x>195</x>
+     <y>130</y>
     </hint>
    </hints>
   </connection>
@@ -245,12 +403,12 @@
    <slot>show()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>430</x>
-     <y>26</y>
+     <x>416</x>
+     <y>24</y>
     </hint>
     <hint type="destinationlabel">
-     <x>414</x>
-     <y>122</y>
+     <x>382</x>
+     <y>192</y>
     </hint>
    </hints>
   </connection>

@@ -23,114 +23,7 @@
    <property name="horizontalSpacing">
     <number>10</number>
    </property>
-   <item row="2" column="1">
-    <layout class="QFormLayout" name="formLayout_5">
-     <property name="verticalSpacing">
-      <number>0</number>
-     </property>
-     <item row="2" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout_10">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="QSpinBox" name="spb9"/>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_19">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_20">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="spb10"/>
-       </item>
-      </layout>
-     </item>
-     <item row="0" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout_9">
-       <property name="spacing">
-        <number>16</number>
-       </property>
-       <item>
-        <widget class="QLabel" name="lNm5">
-         <property name="text">
-          <string>param No.5</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_17">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QLabel" name="lDig5">
-         <property name="text">
-          <string>TextLabel</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_18">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="chb5">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="1" column="0" colspan="2">
-      <widget class="QSlider" name="sld5">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="2" column="2">
+   <item row="1" column="2">
     <layout class="QFormLayout" name="formLayout_6">
      <property name="verticalSpacing">
       <number>0</number>
@@ -141,7 +34,11 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QSpinBox" name="spb11"/>
+        <widget class="QSpinBox" name="spb11">
+         <property name="toolTip">
+          <string>Max Value</string>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="horizontalSpacer_23">
@@ -170,7 +67,11 @@
         </spacer>
        </item>
        <item>
-        <widget class="QSpinBox" name="spb12"/>
+        <widget class="QSpinBox" name="spb12">
+         <property name="toolTip">
+          <string>Min Value</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -181,6 +82,9 @@
        </property>
        <item>
         <widget class="QLabel" name="lNm6">
+         <property name="toolTip">
+          <string>QUADRADIC INNER</string>
+         </property>
          <property name="text">
           <string>param No.6</string>
          </property>
@@ -221,6 +125,10 @@
        </item>
        <item>
         <widget class="QCheckBox" name="chb6">
+         <property name="toolTip">
+          <string>CHECKED FIXES THE PARAMETER
+UNCHECKED MAKES THE PARAMETER FREE.</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -230,6 +138,9 @@
      </item>
      <item row="1" column="0" colspan="2">
       <widget class="QSlider" name="sld6">
+       <property name="toolTip">
+        <string>QUADRADIC INNER</string>
+       </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -237,7 +148,7 @@
      </item>
     </layout>
    </item>
-   <item row="2" column="0">
+   <item row="1" column="0">
     <layout class="QFormLayout" name="formLayout_4">
      <property name="verticalSpacing">
       <number>0</number>
@@ -248,7 +159,11 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QSpinBox" name="spb7"/>
+        <widget class="QSpinBox" name="spb7">
+         <property name="toolTip">
+          <string>Max Value</string>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="horizontalSpacer_15">
@@ -277,7 +192,11 @@
         </spacer>
        </item>
        <item>
-        <widget class="QSpinBox" name="spb8"/>
+        <widget class="QSpinBox" name="spb8">
+         <property name="toolTip">
+          <string>Min Value</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -288,6 +207,9 @@
        </property>
        <item>
         <widget class="QLabel" name="lNm4">
+         <property name="toolTip">
+          <string>OFFSET</string>
+         </property>
          <property name="text">
           <string>param No.4</string>
          </property>
@@ -328,6 +250,10 @@
        </item>
        <item>
         <widget class="QCheckBox" name="chb4">
+         <property name="toolTip">
+          <string>CHECKED FIXES THE PARAMETER
+UNCHECKED MAKES THE PARAMETER FREE.</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -337,6 +263,9 @@
      </item>
      <item row="1" column="0" colspan="2">
       <widget class="QSlider" name="sld4">
+       <property name="toolTip">
+        <string>OFFSET</string>
+       </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -344,7 +273,7 @@
      </item>
     </layout>
    </item>
-   <item row="1" column="1">
+   <item row="0" column="1">
     <layout class="QFormLayout" name="formLayout_2">
      <property name="verticalSpacing">
       <number>0</number>
@@ -355,7 +284,11 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QSpinBox" name="spb3"/>
+        <widget class="QSpinBox" name="spb3">
+         <property name="toolTip">
+          <string>Max Value</string>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="horizontalSpacer_7">
@@ -384,7 +317,11 @@
         </spacer>
        </item>
        <item>
-        <widget class="QSpinBox" name="spb4"/>
+        <widget class="QSpinBox" name="spb4">
+         <property name="toolTip">
+          <string>Min Value</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -395,6 +332,9 @@
        </property>
        <item>
         <widget class="QLabel" name="lNm2">
+         <property name="toolTip">
+          <string>FULL WIDTH</string>
+         </property>
          <property name="text">
           <string>param No.2</string>
          </property>
@@ -435,6 +375,10 @@
        </item>
        <item>
         <widget class="QCheckBox" name="chb2">
+         <property name="toolTip">
+          <string>CHECKED FIXES THE PARAMETER
+UNCHECKED MAKES THE PARAMETER FREE.</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -444,6 +388,9 @@
      </item>
      <item row="1" column="0" colspan="2">
       <widget class="QSlider" name="sld2">
+       <property name="toolTip">
+        <string>FULL WIDTH</string>
+       </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -451,7 +398,132 @@
      </item>
     </layout>
    </item>
-   <item row="1" column="2">
+   <item row="1" column="1">
+    <layout class="QFormLayout" name="formLayout_5">
+     <property name="verticalSpacing">
+      <number>0</number>
+     </property>
+     <item row="2" column="0" colspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout_10">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QSpinBox" name="spb9">
+         <property name="toolTip">
+          <string>Max Value</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_19">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_20">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="spb10">
+         <property name="toolTip">
+          <string>Min Value</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="0" column="0" colspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout_9">
+       <property name="spacing">
+        <number>16</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="lNm5">
+         <property name="toolTip">
+          <string>SLOPE INNER</string>
+         </property>
+         <property name="text">
+          <string>param No.5</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_17">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="lDig5">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_18">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chb5">
+         <property name="toolTip">
+          <string>CHECKED FIXES THE PARAMETER
+UNCHECKED MAKES THE PARAMETER FREE.</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QSlider" name="sld5">
+       <property name="toolTip">
+        <string>SLOPE INNER</string>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="2">
     <layout class="QFormLayout" name="formLayout_3">
      <property name="verticalSpacing">
       <number>0</number>
@@ -462,7 +534,11 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QSpinBox" name="spb5"/>
+        <widget class="QSpinBox" name="spb5">
+         <property name="toolTip">
+          <string>Max Value</string>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="horizontalSpacer_11">
@@ -491,7 +567,11 @@
         </spacer>
        </item>
        <item>
-        <widget class="QSpinBox" name="spb6"/>
+        <widget class="QSpinBox" name="spb6">
+         <property name="toolTip">
+          <string>Min Value</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -502,6 +582,9 @@
        </property>
        <item>
         <widget class="QLabel" name="lNm3">
+         <property name="toolTip">
+          <string>HEIGHT</string>
+         </property>
          <property name="text">
           <string>param No.3</string>
          </property>
@@ -542,6 +625,10 @@
        </item>
        <item>
         <widget class="QCheckBox" name="chb3">
+         <property name="toolTip">
+          <string>CHECKED FIXES THE PARAMETER
+UNCHECKED MAKES THE PARAMETER FREE.</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -551,6 +638,9 @@
      </item>
      <item row="1" column="0" colspan="2">
       <widget class="QSlider" name="sld3">
+       <property name="toolTip">
+        <string>HEIGHT</string>
+       </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -558,331 +648,7 @@
      </item>
     </layout>
    </item>
-   <item row="0" column="1">
-    <layout class="QFormLayout" name="formLayout_9">
-     <property name="verticalSpacing">
-      <number>0</number>
-     </property>
-     <item row="2" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout_18">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="QSpinBox" name="spb17"/>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_35">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_36">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="spb18"/>
-       </item>
-      </layout>
-     </item>
-     <item row="0" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout_17">
-       <property name="spacing">
-        <number>16</number>
-       </property>
-       <item>
-        <widget class="QLabel" name="lNm9">
-         <property name="text">
-          <string>shift</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_33">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QLabel" name="lDig9">
-         <property name="text">
-          <string>TextLabel</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_34">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </item>
-     <item row="1" column="0" colspan="2">
-      <widget class="QSlider" name="sld9">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="1" column="0">
-    <layout class="QFormLayout" name="formLayout_1">
-     <property name="verticalSpacing">
-      <number>0</number>
-     </property>
-     <item row="2" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="QSpinBox" name="spb1"/>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="spb2"/>
-       </item>
-      </layout>
-     </item>
-     <item row="0" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout_1">
-       <property name="spacing">
-        <number>16</number>
-       </property>
-       <item>
-        <widget class="QLabel" name="lNm1">
-         <property name="text">
-          <string>param No.1</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_1">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QLabel" name="lDig1">
-         <property name="text">
-          <string>TextLabel</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="chb1">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="1" column="0" colspan="2">
-      <widget class="QSlider" name="sld1">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="3" column="0">
-    <layout class="QFormLayout" name="formLayout_7">
-     <property name="verticalSpacing">
-      <number>0</number>
-     </property>
-     <item row="2" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout_14">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="QSpinBox" name="spb13"/>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_27">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_28">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="spb14"/>
-       </item>
-      </layout>
-     </item>
-     <item row="0" column="0" colspan="2">
-      <layout class="QHBoxLayout" name="horizontalLayout_13">
-       <property name="spacing">
-        <number>16</number>
-       </property>
-       <item>
-        <widget class="QLabel" name="lNm7">
-         <property name="text">
-          <string>param No.6</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_25">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QLabel" name="lDig7">
-         <property name="text">
-          <string>TextLabel</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_26">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="chb7">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="1" column="0" colspan="2">
-      <widget class="QSlider" name="sld7">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="4" column="0" colspan="3">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::RestoreDefaults</set>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
+   <item row="2" column="1">
     <layout class="QFormLayout" name="formLayout_8">
      <property name="verticalSpacing">
       <number>0</number>
@@ -893,7 +659,11 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QSpinBox" name="spb15"/>
+        <widget class="QSpinBox" name="spb15">
+         <property name="toolTip">
+          <string>Max Value</string>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="horizontalSpacer_31">
@@ -922,7 +692,11 @@
         </spacer>
        </item>
        <item>
-        <widget class="QSpinBox" name="spb16"/>
+        <widget class="QSpinBox" name="spb16">
+         <property name="toolTip">
+          <string>Min Value</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -933,6 +707,9 @@
        </property>
        <item>
         <widget class="QLabel" name="lNm8">
+         <property name="toolTip">
+          <string>QUADRATIC OUTER</string>
+         </property>
          <property name="text">
           <string>param No.6</string>
          </property>
@@ -973,6 +750,10 @@
        </item>
        <item>
         <widget class="QCheckBox" name="chb8">
+         <property name="toolTip">
+          <string>CHECKED FIXES THE PARAMETER
+UNCHECKED MAKES THE PARAMETER FREE.</string>
+         </property>
          <property name="text">
           <string/>
          </property>
@@ -982,6 +763,269 @@
      </item>
      <item row="1" column="0" colspan="2">
       <widget class="QSlider" name="sld8">
+       <property name="toolTip">
+        <string>QUADRATIC OUTER</string>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="0" colspan="3">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::RestoreDefaults</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <layout class="QFormLayout" name="formLayout_1">
+     <property name="verticalSpacing">
+      <number>0</number>
+     </property>
+     <item row="2" column="0" colspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QSpinBox" name="spb1">
+         <property name="toolTip">
+          <string>Max Value</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="spb2">
+         <property name="toolTip">
+          <string>Min Value</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="0" column="0" colspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout_1">
+       <property name="spacing">
+        <number>16</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="lNm1">
+         <property name="toolTip">
+          <string>SYMMETRY POINT</string>
+         </property>
+         <property name="text">
+          <string>param No.1</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_1">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="lDig1">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chb1">
+         <property name="toolTip">
+          <string>CHECKED FIXES THE PARAMETER
+UNCHECKED MAKES THE PARAMETER FREE.</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QSlider" name="sld1">
+       <property name="toolTip">
+        <string>SYMMETRY POINT</string>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="2" column="0">
+    <layout class="QFormLayout" name="formLayout_7">
+     <property name="verticalSpacing">
+      <number>0</number>
+     </property>
+     <item row="2" column="0" colspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout_14">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QSpinBox" name="spb13">
+         <property name="toolTip">
+          <string>Max Value</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_27">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_28">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="spb14">
+         <property name="toolTip">
+          <string>Min Value</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="0" column="0" colspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout_13">
+       <property name="spacing">
+        <number>16</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="lNm7">
+         <property name="toolTip">
+          <string>SLOPE OUTER</string>
+         </property>
+         <property name="text">
+          <string>param No.6</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_25">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="lDig7">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_26">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="chb7">
+         <property name="toolTip">
+          <string>CHECKED FIXES THE PARAMETER
+UNCHECKED MAKES THE PARAMETER FREE.</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QSlider" name="sld7">
+       <property name="toolTip">
+        <string>SLOPE OUTER</string>
+       </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -1022,22 +1066,6 @@
     <hint type="destinationlabel">
      <x>112</x>
      <y>96</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>sld9</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>lDig9</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>305</x>
-     <y>40</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>329</x>
-     <y>20</y>
     </hint>
    </hints>
   </connection>
