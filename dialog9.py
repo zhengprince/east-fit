@@ -1,19 +1,16 @@
-# -*- coding: utf-8 -*-
 from PyQt4 import QtGui, QtCore
 
-import param
+from dataTransfer import *
 from Ui_dialog9 import Ui_Dialog9
 
 
 class Dialog9(QtGui.QDialog, Ui_Dialog9):
     """
     c includes three parts, sliders' value, spin boxes' value, check buttons' value
-    shift = c[0][-1]
     """
-    c = dict(Params=[[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                     [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
+    c = dict(Params=[[0, 0, 0, 0, 0, 0, 0, 0, 0],
+                     [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]],
                      [0, 0, 0, 0, 0, 0, 0, 0, 0]])
-    temp = param.GlobalVar9.value['Params']  # 临时存储
 
     def __init__(self, parent=None):
         QtGui.QDialog.__init__(self, parent)
@@ -22,6 +19,8 @@ class Dialog9(QtGui.QDialog, Ui_Dialog9):
             if self.buttonBox.buttonRole(btn) == QtGui.QDialogButtonBox.ResetRole:
                 btn.clicked.connect(self.reset)
         self._initial()
+        for x in self.findChildren(QtGui.QDialogButtonBox):
+            x.setFocusPolicy(QtCore.Qt.NoFocus)
 
     def reset(self):
         """
@@ -45,8 +44,6 @@ class Dialog9(QtGui.QDialog, Ui_Dialog9):
         self.spb16.setValue(1000)
         self.spb17.setValue(0)
         self.spb18.setValue(1000)
-        self.spb19.setValue(-100)
-        self.spb20.setValue(100)
         self.chb1.setCheckState(0)
         self.chb2.setCheckState(0)
         self.chb3.setCheckState(0)
@@ -65,7 +62,6 @@ class Dialog9(QtGui.QDialog, Ui_Dialog9):
         self.sld7.setMinimum(0)
         self.sld8.setMinimum(0)
         self.sld9.setMinimum(0)
-        self.sld10.setMinimum(-100)
         self.sld1.setMaximum(1000)
         self.sld2.setMaximum(1000)
         self.sld3.setMaximum(1000)
@@ -75,7 +71,6 @@ class Dialog9(QtGui.QDialog, Ui_Dialog9):
         self.sld7.setMaximum(1000)
         self.sld8.setMaximum(1000)
         self.sld9.setMaximum(1000)
-        self.sld10.setMaximum(100)
         self.sld1.setValue(970)
         self.sld2.setValue(50)
         self.sld3.setValue(100)
@@ -85,7 +80,6 @@ class Dialog9(QtGui.QDialog, Ui_Dialog9):
         self.sld7.setValue(0)
         self.sld8.setValue(0)
         self.sld9.setValue(0)
-        self.sld10.setValue(0)
         self.lDig1.setNum(self.sld1.value())
         self.lDig2.setNum(self.sld2.value())
         self.lDig3.setNum(self.sld3.value())
@@ -95,7 +89,6 @@ class Dialog9(QtGui.QDialog, Ui_Dialog9):
         self.lDig7.setNum(self.sld7.value())
         self.lDig8.setNum(self.sld8.value())
         self.lDig9.setNum(self.sld9.value())
-        self.lDig10.setNum(self.sld10.value())
         self.save()
 
     @QtCore.pyqtSignature("")
@@ -112,47 +105,39 @@ class Dialog9(QtGui.QDialog, Ui_Dialog9):
         for sld in self.findChildren(QtGui.QSlider):
             sld.setPageStep(1)
         for spb in self.findChildren(QtGui.QSpinBox):
-            if spb == self.spb19 or spb == self.spb20:
-                spb.setMinimum(-1000)
-            else:
-                spb.setMinimum(-10000)
+            spb.setMinimum(-10000)
         for spb in self.findChildren(QtGui.QSpinBox):
-            if spb == self.spb19 or spb == self.spb20:
-                spb.setMaximum(1000)
-            else:
-                spb.setMaximum(10000)
-        if len(param.GlobalVar9.value['Params']) == 0:
+            spb.setMaximum(10000)
+        if len(GlobalVar9.value['Params']) == 0:
             self.reset()
         else:
-            self.chb1.setCheckState(param.GlobalVar9.value['Params'][2][0])
-            self.chb2.setCheckState(param.GlobalVar9.value['Params'][2][1])
-            self.chb3.setCheckState(param.GlobalVar9.value['Params'][2][2])
-            self.chb4.setCheckState(param.GlobalVar9.value['Params'][2][3])
-            self.chb5.setCheckState(param.GlobalVar9.value['Params'][2][4])
-            self.chb6.setCheckState(param.GlobalVar9.value['Params'][2][5])
-            self.chb7.setCheckState(param.GlobalVar9.value['Params'][2][6])
-            self.chb8.setCheckState(param.GlobalVar9.value['Params'][2][7])
-            self.chb9.setCheckState(param.GlobalVar9.value['Params'][2][8])
-            self.spb1.setValue(param.GlobalVar9.value['Params'][1][0][0])
-            self.spb2.setValue(param.GlobalVar9.value['Params'][1][0][1])
-            self.spb3.setValue(param.GlobalVar9.value['Params'][1][1][0])
-            self.spb4.setValue(param.GlobalVar9.value['Params'][1][1][1])
-            self.spb5.setValue(param.GlobalVar9.value['Params'][1][2][0])
-            self.spb6.setValue(param.GlobalVar9.value['Params'][1][2][1])
-            self.spb7.setValue(param.GlobalVar9.value['Params'][1][3][0])
-            self.spb8.setValue(param.GlobalVar9.value['Params'][1][3][1])
-            self.spb9.setValue(param.GlobalVar9.value['Params'][1][4][0])
-            self.spb10.setValue(param.GlobalVar9.value['Params'][1][4][1])
-            self.spb11.setValue(param.GlobalVar9.value['Params'][1][5][0])
-            self.spb12.setValue(param.GlobalVar9.value['Params'][1][5][1])
-            self.spb13.setValue(param.GlobalVar9.value['Params'][1][6][0])
-            self.spb14.setValue(param.GlobalVar9.value['Params'][1][6][1])
-            self.spb15.setValue(param.GlobalVar9.value['Params'][1][7][0])
-            self.spb16.setValue(param.GlobalVar9.value['Params'][1][7][1])
-            self.spb17.setValue(param.GlobalVar9.value['Params'][1][8][0])
-            self.spb18.setValue(param.GlobalVar9.value['Params'][1][8][1])
-            self.spb19.setValue(param.GlobalVar9.value['Params'][1][9][0])
-            self.spb20.setValue(param.GlobalVar9.value['Params'][1][9][1])
+            self.chb1.setCheckState(GlobalVar9.value['Params'][2][0])
+            self.chb2.setCheckState(GlobalVar9.value['Params'][2][1])
+            self.chb3.setCheckState(GlobalVar9.value['Params'][2][2])
+            self.chb4.setCheckState(GlobalVar9.value['Params'][2][3])
+            self.chb5.setCheckState(GlobalVar9.value['Params'][2][4])
+            self.chb6.setCheckState(GlobalVar9.value['Params'][2][5])
+            self.chb7.setCheckState(GlobalVar9.value['Params'][2][6])
+            self.chb8.setCheckState(GlobalVar9.value['Params'][2][7])
+            self.chb9.setCheckState(GlobalVar9.value['Params'][2][8])
+            self.spb1.setValue(GlobalVar9.value['Params'][1][0][0])
+            self.spb2.setValue(GlobalVar9.value['Params'][1][0][1])
+            self.spb3.setValue(GlobalVar9.value['Params'][1][1][0])
+            self.spb4.setValue(GlobalVar9.value['Params'][1][1][1])
+            self.spb5.setValue(GlobalVar9.value['Params'][1][2][0])
+            self.spb6.setValue(GlobalVar9.value['Params'][1][2][1])
+            self.spb7.setValue(GlobalVar9.value['Params'][1][3][0])
+            self.spb8.setValue(GlobalVar9.value['Params'][1][3][1])
+            self.spb9.setValue(GlobalVar9.value['Params'][1][4][0])
+            self.spb10.setValue(GlobalVar9.value['Params'][1][4][1])
+            self.spb11.setValue(GlobalVar9.value['Params'][1][5][0])
+            self.spb12.setValue(GlobalVar9.value['Params'][1][5][1])
+            self.spb13.setValue(GlobalVar9.value['Params'][1][6][0])
+            self.spb14.setValue(GlobalVar9.value['Params'][1][6][1])
+            self.spb15.setValue(GlobalVar9.value['Params'][1][7][0])
+            self.spb16.setValue(GlobalVar9.value['Params'][1][7][1])
+            self.spb17.setValue(GlobalVar9.value['Params'][1][8][0])
+            self.spb18.setValue(GlobalVar9.value['Params'][1][8][1])
             self.spb2.setMinimum(self.spb1.value())
             self.spb1.setMaximum(self.spb2.value())
             self.spb4.setMinimum(self.spb3.value())
@@ -171,8 +156,6 @@ class Dialog9(QtGui.QDialog, Ui_Dialog9):
             self.spb15.setMaximum(self.spb16.value())
             self.spb18.setMinimum(self.spb17.value())
             self.spb17.setMaximum(self.spb18.value())
-            self.spb20.setMinimum(self.spb19.value())
-            self.spb19.setMaximum(self.spb20.value())
             self.sld1.setMinimum(self.spb1.value())
             self.sld1.setMaximum(self.spb2.value())
             self.sld2.setMinimum(self.spb3.value())
@@ -191,18 +174,15 @@ class Dialog9(QtGui.QDialog, Ui_Dialog9):
             self.sld8.setMaximum(self.spb16.value())
             self.sld9.setMinimum(self.spb17.value())
             self.sld9.setMaximum(self.spb18.value())
-            self.sld10.setMinimum(self.spb19.value())
-            self.sld10.setMaximum(self.spb20.value())
-            self.sld1.setValue(param.GlobalVar9.value['Params'][0][0])
-            self.sld2.setValue(param.GlobalVar9.value['Params'][0][1])
-            self.sld3.setValue(param.GlobalVar9.value['Params'][0][2])
-            self.sld4.setValue(param.GlobalVar9.value['Params'][0][3])
-            self.sld5.setValue(param.GlobalVar9.value['Params'][0][4])
-            self.sld6.setValue(param.GlobalVar9.value['Params'][0][5])
-            self.sld7.setValue(param.GlobalVar9.value['Params'][0][6])
-            self.sld8.setValue(param.GlobalVar9.value['Params'][0][7])
-            self.sld9.setValue(param.GlobalVar9.value['Params'][0][8])
-            self.sld10.setValue(param.GlobalVar9.value['Params'][0][9])
+            self.sld1.setValue(GlobalVar9.value['Params'][0][0])
+            self.sld2.setValue(GlobalVar9.value['Params'][0][1])
+            self.sld3.setValue(GlobalVar9.value['Params'][0][2])
+            self.sld4.setValue(GlobalVar9.value['Params'][0][3])
+            self.sld5.setValue(GlobalVar9.value['Params'][0][4])
+            self.sld6.setValue(GlobalVar9.value['Params'][0][5])
+            self.sld7.setValue(GlobalVar9.value['Params'][0][6])
+            self.sld8.setValue(GlobalVar9.value['Params'][0][7])
+            self.sld9.setValue(GlobalVar9.value['Params'][0][8])
             self.lDig1.setNum(self.sld1.value())
             self.lDig2.setNum(self.sld2.value())
             self.lDig3.setNum(self.sld3.value())
@@ -212,7 +192,6 @@ class Dialog9(QtGui.QDialog, Ui_Dialog9):
             self.lDig7.setNum(self.sld7.value())
             self.lDig8.setNum(self.sld8.value())
             self.lDig9.setNum(self.sld9.value())
-            self.lDig10.setNum(self.sld10.value())
         self.save()
 
     def save(self):
@@ -225,7 +204,6 @@ class Dialog9(QtGui.QDialog, Ui_Dialog9):
         self.c['Params'][0][6] = self.sld7.value()
         self.c['Params'][0][7] = self.sld8.value()
         self.c['Params'][0][8] = self.sld9.value()
-        self.c['Params'][0][9] = self.sld10.value()
         self.c['Params'][1][0][0] = self.spb1.value()
         self.c['Params'][1][0][1] = self.spb2.value()
         self.c['Params'][1][1][0] = self.spb3.value()
@@ -244,8 +222,6 @@ class Dialog9(QtGui.QDialog, Ui_Dialog9):
         self.c['Params'][1][7][1] = self.spb16.value()
         self.c['Params'][1][8][0] = self.spb17.value()
         self.c['Params'][1][8][1] = self.spb18.value()
-        self.c['Params'][1][9][0] = self.spb19.value()
-        self.c['Params'][1][9][1] = self.spb20.value()
         self.c['Params'][2][0] = self.chb1.checkState()
         self.c['Params'][2][1] = self.chb2.checkState()
         self.c['Params'][2][2] = self.chb3.checkState()
@@ -255,8 +231,7 @@ class Dialog9(QtGui.QDialog, Ui_Dialog9):
         self.c['Params'][2][6] = self.chb7.checkState()
         self.c['Params'][2][7] = self.chb8.checkState()
         self.c['Params'][2][8] = self.chb9.checkState()
-        param.GlobalVar9(self.c)
-        # self.a()
+        GlobalVar9(self.c)
 
     @QtCore.pyqtSignature("int")
     def on_spb1_valueChanged(self):
@@ -347,16 +322,6 @@ class Dialog9(QtGui.QDialog, Ui_Dialog9):
     def on_spb18_valueChanged(self):
         self.sld9.setMaximum(self.spb18.value())
         self.spb17.setMaximum(self.spb18.value())
-
-    @QtCore.pyqtSignature("int")
-    def on_spb19_valueChanged(self):
-        self.sld10.setMinimum(self.spb19.value())
-        self.spb20.setMinimum(self.spb19.value())
-
-    @QtCore.pyqtSignature("int")
-    def on_spb20_valueChanged(self):
-        self.sld10.setMaximum(self.spb20.value())
-        self.spb19.setMaximum(self.spb20.value())
 
 
 if __name__ == '__main__':
