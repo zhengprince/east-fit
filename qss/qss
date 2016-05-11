@@ -1,0 +1,149 @@
+.QPushButton {
+  color: #666;
+  background-color: #EEE;
+  border-color: #EEE;
+  font-weight: 300;
+  font-size: 13px;
+  font-family: "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  text-decoration: none;
+  text-align: center;
+  height: 20px;
+  padding: 0 10px;
+  margin: 0;
+  border: none;}
+  .QPushButton:hover {
+    background-color: #f6f6f6;
+    text-decoration: none;
+    outline: none; }
+  .QPushButton:pressed {
+    text-decoration: none;
+    background-color: #eeeeee;
+    border-color: #cfcfcf;
+    color: #d4d4d4;}
+  .QPushButton:disabled {
+    top: 0 !important;
+    background: #EEE !important;
+    border: 1px solid #DDD !important;
+    color: #CCC !important;
+    opacity: 0.8 !important; }
+
+.QPushButton {
+  border-radius: 10px; }
+
+.QPushButton {
+  background-color: #A5DE37;
+  border-color: #A5DE37;
+  color: #FFF; }
+  .QPushButton:hover {
+    background-color: #b9e563;
+    border-color: #b9e563;
+    color: #FFF; }
+  .QPushButton:pressed {
+    background-color: #a1d243;
+    border-color: #a1d243;
+    color: #FFF; }
+
+
+.QTabBar::tab {
+  color: #666;
+  background-color: #EEE;
+  border-color: #EEE;
+  font-weight: 300;
+  font-size: 13px;
+  font-family: "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  text-decoration: none;
+  text-align: center;
+  height: 20px;
+  width: 120px;
+  padding: 0 20px;
+  margin: 0;
+  border: none;
+  /*
+  * Disabled State
+  *
+  * The disabled state uses the class .disabled, is-disabled,
+  * and the form attribute disabled="disabled".
+  * The use of !important is only added because this is a state
+  * that must be applied to all buttons when in a disabled state.
+  */ }
+  .QTabBar::tab:hover {
+    background-color: #f6f6f6;
+    text-decoration: none;
+    outline: none; }
+  .QTabBar::tab:selected {
+    text-decoration: none;
+    background-color: #eeeeee;
+    border-color: #cfcfcf;
+    color: #d4d4d4;}
+  .QTabBar::tab:disabled {
+    top: 0 !important;
+    background: #EEE !important;
+    border: 1px solid #DDD !important;
+    color: #CCC !important;
+    opacity: 0.8 !important; }
+
+.QTabBar::tab {
+  background-color: #A5DE37;
+  border-color: #A5DE37;
+  color: #FFF; }
+  .QTabBar::tab:hover {
+    background-color: #b9e563;
+    border-color: #b9e563;
+    color: #FFF; }
+  .QTabBar::tab:selected {
+    background-color: #a1d243;
+    border-color: #a1d243;
+    color: #FFF; }
+
+
+.QComboBox {
+  color: #666;
+  background-color: #EEE;
+  border-color: #EEE;
+  font-weight: 300;
+  font-size: 13px;
+  font-family: "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  text-decoration: none;
+  text-align: center;
+  height: 20px;
+  padding: 0 10px;
+  margin: 0;
+  border: none;
+  background-color: #A5DE37;
+  border-color: #A5DE37;
+  color: #FFF;
+  border-radius: 10px; }
+.QComboBox::hover{
+    background-color: #b9e563;
+    border-color: #b9e563;
+    color: #FFF; }
+
+.QComboBox:on {
+    background-color: #a1d243;
+    border-color: #a1d243;
+    color: #8bc220; 
+    border-radius: 3px;}
+.QComboBox::drop-down {
+  subcontrol-origin: padding;
+  subcontrol-position: top right;
+  width: 20px;
+
+  border-left-width: 1px;
+  border-left-color: darkgray;
+  border-left-style: solid; /* just a single line */
+  border-top-right-radius: 3px; /* same radius as the .QComboBox */
+  border-bottom-right-radius: 3px;}
+.QComboBox::down-arrow {
+}
+.QComboBox::down-arrow:on {
+}
+.QComboBox .QAbstractItemView {
+  color: white;
+  background: rgba(165, 222, 55, 0.95);
+  border-color: #8bc220; 
+  border: none;
+  selection-background-color: rgba(165, 222, 55, 0.95);
+  selection-background-color: #8bc220;}
+.QComboBox .QAbstractItemView::item {
+  height: 25px; 
+}
