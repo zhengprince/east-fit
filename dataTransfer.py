@@ -6,6 +6,8 @@ from data import Data
 
 from eastmap import east_mapping
 
+data = Data()
+
 
 class GlobalVar5(object):
     value = dict(Params=[])
@@ -117,7 +119,6 @@ class GlobalVar(object):
 #     c = [c]
 #     return c
 class ExcludedData(object):
-    data = Data()
     library = dict(data=np.array([]),
                    processed=data)
 
@@ -182,8 +183,6 @@ class DataBase(object):
 
 
 class ImportData(object):
-    from data import Data
-    data = Data()
     value = dict(data=np.array([]),  # contain all of diagnostics
                  processed_data=data,
                  diagnostic1=np.array([]),
@@ -306,8 +305,10 @@ class ImportData(object):
                         node_z = 'Z_coreTS'
                         if par['Profile'] == 'Te':
                             node_p = 'Te_coreTS'
+                            node_err = 'Te_coreTSerr'
                         elif par['Profile'] == 'ne':
                             node_p = 'ne_coreTS'
+                            node_err = 'ne_coreTSerr'
                     elif text == 'ECE':
                         subtree = 'HRS_EAST'
                         node_r = 'R_HRS'
@@ -368,17 +369,6 @@ class ImportData(object):
                         self.value['data'] = np.vstack((self.value['data'], result))
                     else:
                         self.value['data'] = result
-                        # print self.value['data']
-                        # else:
-                        #     if self.value['data'].any():
-                        #         print 'result=', result
-                        #         print len(self.value['data'])
-                        #         print self.value['data']
-                        #         self.value['data'] = self.value['data'][self.value['data'] != result]
-                        #         print len(self.value['data'])
-                        #         print self.value['data']
-                        #     else:
-                        #         pass
 
     # noinspection PyArgumentList
     def reflectometry(self, shot, time, node_times, data_r, data_p, efit_tree, rhopsi):

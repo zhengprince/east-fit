@@ -4,12 +4,12 @@ Enable picking on the legend to toggle the legended line on and off
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def onpick(event):
     # on the pick event, find the orig line corresponding to the
     # legend proxy line, and toggle the visibility
     for property, value in vars(event).iteritems():
-        print property, ": ", value
-    print('onpick2 line:', event.pickx, event.picky)
+        print "in onpick,", property, ": ", value
     legline = event.artist
     origline = lined[legline]
     vis = not origline.get_visible()
@@ -22,18 +22,21 @@ def onpick(event):
         legline.set_alpha(0.2)
     fig.canvas.draw()
 
-def line_picker(line, mouseevent):
+
+def line_picker(line, event):
     """
     find the points within a certain distance from the mouseclick in
     data coords and attach some extra attributes, pickx and picky
     which are the data points that were picked
     """
-    if mouseevent.xdata is None:
+    for property, value in vars(event).iteritems():
+        print "in line_picker,", property, ": ", value
+    if event.xdata is None:
         return False, dict()
     xdata = line.get_xdata()
     ydata = line.get_ydata()
     maxd = 0.05
-    d = np.sqrt((xdata - mouseevent.xdata)**2. + (ydata - mouseevent.ydata)**2.)
+    d = np.sqrt((xdata - event.xdata) ** 2. + (ydata - event.ydata) ** 2.)
 
     ind = np.nonzero(np.less_equal(d, maxd))
     if len(ind):
@@ -44,17 +47,17 @@ def line_picker(line, mouseevent):
     else:
         return False, dict()
 
+
 t = np.arange(0.0, 0.2, 0.1)
-y1 = 2*np.sin(2*np.pi*t)
-y2 = 4*np.sin(2*np.pi*2*t)
+y1 = 2 * np.sin(2 * np.pi * t)
+y2 = 4 * np.sin(2 * np.pi * 2 * t)
 
 fig, ax = plt.subplots()
 ax.set_title('Click on legend line to toggle line on/off')
-line1, = ax.plot(t, y1, lw=2, color='red', label='1 HZ', picker=line_picker)
-line2, = ax.plot(t, y2, lw=2, color='blue', label='2 HZ', picker=line_picker)
+line1, = ax.plot(t, y1, lw=2, color='red', label='1 HZ')
+line2, = ax.plot(t, y2, lw=2, color='blue', label='2 HZ')
 leg = ax.legend(loc='upper left', fancybox=True, shadow=True)
 leg.get_frame().set_alpha(0.4)
-
 
 # we will set up a dict mapping legend line to orig line, and enable
 # picking on the legend line

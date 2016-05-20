@@ -12,7 +12,7 @@ ee = 1.602e-19
 zz = 6  # Carbon
 zeff = 2.5  #
 nedge = 10  # edge points to fix current
-rho = np.linspace(0, 1.0, 51)
+rho = np.linspace(0, 1.06, 54)
 
 
 def line_picker(line, event):
@@ -355,6 +355,7 @@ class MplCanvasWrapper(QtGui.QWidget):
         self.datafit = Data()
 
     def fit(self, data, value, par):
+        # TODO: add 'tsplfun' fit function
         func = par['Func']
         if len(value['Params']) == 0:
             if func == 'tanh_multi':
@@ -743,6 +744,7 @@ def process_pick(pick, x, y, par):
             ExcludedData(pick)
 
             ExcludedData.library['data'] = undo_scale_shift(ExcludedData.library['processed'], par)
+            print "in process_pick:\nExcludedData.library['data']=\n", ExcludedData.library['data']
             # else:
             #     temp.x[0] = np.hstack((temp.x[0], i))
             #     index = pick[:, 0] == i
@@ -792,6 +794,7 @@ def process_pick2(pick, exclude, key, par):
             ExcludedData(pick, False)
 
             ExcludedData.library['data'] = undo_scale_shift(ExcludedData.library['processed'], par)
+            print "in process_pick2:\nExcludedData.library['data']=\n", ExcludedData.library['data']
 
     if par['SourceSwitch']:
         if key == 'd1':
@@ -810,7 +813,7 @@ def process_pick2(pick, exclude, key, par):
 
 def undo_scale_shift(data, par):
     temp = data.copy()
-    print temp
+    print "in undo_scale_shift:\ntemp=\n", temp
     h = temp.x[0].shape[0]
     zoom = 1 + par['Stretch'] / 1000.
     for i in range(h):

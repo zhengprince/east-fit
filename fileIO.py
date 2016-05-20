@@ -1,5 +1,6 @@
 import numpy as np
 import re
+from dataTransfer import GlobalVar6, GlobalVar9, ExcludedData, ImportData
 
 
 def open_file(filename, key):
@@ -22,6 +23,8 @@ def open_file(filename, key):
 def save_file(save_name, value, data, datafit, par):
     if not save_name.isEmpty():
         output = open(save_name, 'w')
+
+    # write params
     print >> output, "# ", par['Shot'], "\t", par['Time'], "ms\n"
     if len(value['Params']):
         try:
@@ -52,8 +55,11 @@ def save_file(save_name, value, data, datafit, par):
             pass
     else:
         pass
-    print >> output, "#raw data\n"
-    print >> output, "  " + "#" + str(par['RhoPsi'])
+
+    # write raw data
+    print >> output, "&namelist"
+    print >> output, ";#raw data\n"
+    print >> output, ";  #" + str(par['RhoPsi'])
     rawx = str(data.x[0])
     rawx = rawx.replace("array([", "")
     rawx = rawx.replace("[", "")
@@ -65,11 +71,35 @@ def save_file(save_name, value, data, datafit, par):
         rawy = str(data.y)
     rawy = rawy.replace("[", "")
     rawy = rawy.replace("]", "") + "\n"
+    print >> output, "raw" + str(par['RhoPsi']) + " ="
     print >> output, " " + rawx + "\n"
-    print >> output, "  #data"
+    print >> output, ";  #data"
+    print >> output, "raw_data ="
     print >> output, " " + rawy + "\n"
+
+    # write excluded data if any
+    if ExcludedData.library['data'].any():
+        print >> output, ";#excluded data\n"
+        print >> output, ";  #" + str(par['RhoPsi'])
+        excludedx = str(ExcludedData.library['data'][:, 0])
+        excludedx = excludedx.replace("array([", "")
+        excludedx = excludedx.replace("[", "")
+        excludedx = excludedx.replace("])", "") + "\n"
+        excludedx = excludedx.replace("]", "") + "\n"
+        excludedy = str(ExcludedData.library['data'][:, 1])
+        excludedy = excludedy.replace("array([", "")
+        excludedy = excludedy.replace("[", "")
+        excludedy = excludedy.replace("])", "") + "\n"
+        excludedy = excludedy.replace("]", "") + "\n"
+        print >> output, "excluded_rho ="
+        print >> output, "  " + excludedx + "\n"
+        print >> output, ";  #data"
+        print >> output, "excluded_data ="
+        print >> output, "  " + excludedy + "\n"
+
+    # write fitted data
     try:
-        print >> output, "#fitted data\n"
+        print >> output, ";#fitted data\n"
         rho = np.linspace(0, 1, 51)
         fitx = str(rho)
         fitx = fitx.replace("[", "")
@@ -80,9 +110,13 @@ def save_file(save_name, value, data, datafit, par):
             fity = str(datafit.y[:51])
         fity = fity.replace("[", "")
         fity = fity.replace("]", "") + "\n"
-        print >> output, "  " + "#" + str(par['RhoPsi'])
+        print >> output, ";  " + "#" + str(par['RhoPsi'])
+        print >> output, "fit" + str(par['RhoPsi']) + " ="
         print >> output, " " + fitx + "\n"
-        print >> output, "  #data"
+        print >> output, ";  #data"
+        print >> output, "fit_data ="
         print >> output, " " + fity
     except:
         pass
+
+    print >> output, "/"
