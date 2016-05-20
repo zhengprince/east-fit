@@ -71,7 +71,7 @@ def save_file(save_name, value, data, datafit, par):
         rawy = str(data.y)
     rawy = rawy.replace("[", "")
     rawy = rawy.replace("]", "") + "\n"
-    print >> output, "raw" + str(par['RhoPsi']) + " ="
+    print >> output, "raw_" + str(par['RhoPsi']) + " ="
     print >> output, " " + rawx + "\n"
     print >> output, ";  #data"
     print >> output, "raw_data ="
@@ -91,10 +91,10 @@ def save_file(save_name, value, data, datafit, par):
         excludedy = excludedy.replace("[", "")
         excludedy = excludedy.replace("])", "") + "\n"
         excludedy = excludedy.replace("]", "") + "\n"
-        print >> output, "excluded_rho ="
+        print >> output, "excluded_x ="
         print >> output, "  " + excludedx + "\n"
         print >> output, ";  #data"
-        print >> output, "excluded_data ="
+        print >> output, "excluded_y ="
         print >> output, "  " + excludedy + "\n"
 
     # write fitted data
@@ -111,7 +111,7 @@ def save_file(save_name, value, data, datafit, par):
         fity = fity.replace("[", "")
         fity = fity.replace("]", "") + "\n"
         print >> output, ";  " + "#" + str(par['RhoPsi'])
-        print >> output, "fit" + str(par['RhoPsi']) + " ="
+        print >> output, "fit_" + str(par['RhoPsi']) + " ="
         print >> output, " " + fitx + "\n"
         print >> output, ";  #data"
         print >> output, "fit_data ="
