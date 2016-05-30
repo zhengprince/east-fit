@@ -40,7 +40,16 @@ def line_picker(line, event):
     ydata = line.get_ydata()
     maxd = 0.05
     d = np.sqrt((xdata - event.xdata) ** 2. + (ydata - event.ydata) ** 2.)
+    print "xxxxxxxxxxxxxxxxxx\nlen(d)=", len(d)
+    ind_min = np.argmin(d)
+    print ind_min
+    tmp = d != d
+    print tmp
+    tmp[ind_min] = True
+    print tmp
     ind = np.nonzero(np.less_equal(d, maxd))
+    print ind
+    ind *= tmp
     if len(ind):
         pickx = np.take(xdata, ind)
         picky = np.take(ydata, ind)
@@ -50,14 +59,6 @@ def line_picker(line, event):
         return True, props
     else:
         return False, dict()
-
-
-# def on_pick(event):
-#     print('point:', event.pickx, event.picky)
-#
-#
-# def on_press(event):
-#     print('you pressed', event.button)
 
 
 class MplCanvas(FigureCanvas):
@@ -288,22 +289,25 @@ class MplCanvas(FigureCanvas):
             # print "value['processed_data]:\n", ImportData.value['processed_data']
             # print "value['processed_d1]:\n", ImportData.value['processed_d1']
             print 'self.pickx: ', self.pickx
-            print 'len(self.pickx[0]): ', len(self.pickx[0])
-            if len(self.pickx[0]) != 1:
-                pick = np.array(zip(self.pickx[0], self.picky[0]))
+            if self.pickx == []:
+                pass
             else:
-                pick = np.array([[self.pickx[0][0], self.picky[0][0]]])
-            print "pick=", pick
-            process_excluded_data(self.artist_label, self.par['Profile'], self.par, pick)
-            # if type(excluded_data).__module__ == np.__name__:  # if it's not numpy type,it's NoneType
-            # # if excluded_data.any():
-            #     ExcludedData(excluded_data)
-            # else:
-            #     ExcludedData(excluded_data, False)
-            # print "after process excluded data\n"
-            # print "value['processed_data']:\n", ImportData.value['processed_data']
-            # print "value['processed_d1]:\n", ImportData.value['processed_d1'], "\n\n\n\n\n"
-            self.plot_data(self.par)
+                print 'len(self.pickx[0]): ', len(self.pickx[0])
+                if len(self.pickx[0]) != 1:
+                    pick = np.array(zip(self.pickx[0], self.picky[0]))
+                else:
+                    pick = np.array([[self.pickx[0][0], self.picky[0][0]]])
+                print "pick=", pick
+                process_excluded_data(self.artist_label, self.par['Profile'], self.par, pick)
+                # if type(excluded_data).__module__ == np.__name__:  # if it's not numpy type,it's NoneType
+                # # if excluded_data.any():
+                #     ExcludedData(excluded_data)
+                # else:
+                #     ExcludedData(excluded_data, False)
+                # print "after process excluded data\n"
+                # print "value['processed_data']:\n", ImportData.value['processed_data']
+                # print "value['processed_d1]:\n", ImportData.value['processed_d1'], "\n\n\n\n\n"
+                self.plot_data(self.par)
 
             if self.l1:
                 processed_data = ImportData.value['processed_data']
@@ -347,6 +351,10 @@ class MplCanvasWrapper(QtGui.QWidget):
         self.setLayout(self.vb)
         self.data = Data()
         self.datafit = Data()
+        # self.actionAbout = QtGui.QAction(self)
+        # self.actionAbout.setObjectName(u"actionAbout")
+        # self.actionAbout.setText("About")
+        # self.actionAbout.triggered.connect(self.about)
 
     def fit(self, data, value, par):
         # TODO: add 'tsplfun' fit function
@@ -375,6 +383,22 @@ class MplCanvasWrapper(QtGui.QWidget):
     def clean(self):
         self.canvas.clean_lines()
 
+    # def contextMenuEvent(self, event):
+    #     menu = QtGui.QMenu(self)
+    #     menu.addAction(self.actionAbout)
+    #     menu.exec_(QtGui.QCursor().pos())
+    #
+    # def about(self):
+    #     msg = QtGui.QMessageBox(self)
+    #     msg.about(self,
+    #               "About",
+    #               '<html>'
+    #               '<body>'
+    #               '<p>If you have any questions or advices</p>'
+    #               '</p>'
+    #               '</body>'
+    #               '</html>')
+
 
 def process_data(par):
     if len(ImportData.value['data']) is not 0:
@@ -387,41 +411,41 @@ def process_data(par):
     if par['SourceSwitch']:
         if ImportData.value['diagnostic1'].any():
             ImportData.value['processed_d1'] = scale_shift(ImportData.value['diagnostic1'], par)
-            x = ImportData.value['processed_d1'].x[0]
-            y = np.array(ImportData.value['processed_d1'].y)
-            temp = np.array([x, y]).T
-            DataBase(d1=temp)
+            # x = ImportData.value['processed_d1'].x[0]
+            # y = np.array(ImportData.value['processed_d1'].y)
+            # temp = np.array([x, y]).T
+            # DataBase(d1=temp)
         if ImportData.value['diagnostic2'].any():
             ImportData.value['processed_d2'] = scale_shift(ImportData.value['diagnostic2'], par)
-            x = ImportData.value['processed_d2'].x[0]
-            y = np.array(ImportData.value['processed_d2'].y)
-            temp = np.array([x, y]).T
-            DataBase(d2=temp)
+            # x = ImportData.value['processed_d2'].x[0]
+            # y = np.array(ImportData.value['processed_d2'].y)
+            # temp = np.array([x, y]).T
+            # DataBase(d2=temp)
         if ImportData.value['diagnostic3'].any():
             ImportData.value['processed_d3'] = scale_shift(ImportData.value['diagnostic3'], par)
-            x = ImportData.value['processed_d3'].x[0]
-            y = np.array(ImportData.value['processed_d3'].y)
-            temp = np.array([x, y]).T
-            DataBase(d3=temp)
+            # x = ImportData.value['processed_d3'].x[0]
+            # y = np.array(ImportData.value['processed_d3'].y)
+            # temp = np.array([x, y]).T
+            # DataBase(d3=temp)
         if ImportData.value['diagnostic4'].any():
             ImportData.value['processed_d4'] = scale_shift(ImportData.value['diagnostic4'], par)
-            x = ImportData.value['processed_d4'].x[0]
-            y = np.array(ImportData.value['processed_d4'].y)
-            temp = np.array([x, y]).T
-            DataBase(d4=temp)
+            # x = ImportData.value['processed_d4'].x[0]
+            # y = np.array(ImportData.value['processed_d4'].y)
+            # temp = np.array([x, y]).T
+            # DataBase(d4=temp)
         if ImportData.value['diagnostic5'].any():
             ImportData.value['processed_d5'] = scale_shift(ImportData.value['diagnostic5'], par)
-            x = ImportData.value['processed_d5'].x[0]
-            y = np.array(ImportData.value['processed_d5'].y)
-            temp = np.array([x, y]).T
-            DataBase(d5=temp)
+            # x = ImportData.value['processed_d5'].x[0]
+            # y = np.array(ImportData.value['processed_d5'].y)
+            # temp = np.array([x, y]).T
+            # DataBase(d5=temp)
     else:
         if ImportData.value['filein'].any():
             ImportData.value['processed_filein'] = scale_shift(ImportData.value['filein'], par)
-            x = ImportData.value['processed_filein'].x[0]
-            y = np.array(ImportData.value['processed_filein'].y)
-            temp = np.array([x, y]).T
-            DataBase(filein=temp)
+            # x = ImportData.value['processed_filein'].x[0]
+            # y = np.array(ImportData.value['processed_filein'].y)
+            # temp = np.array([x, y]).T
+            # DataBase(filein=temp)
 
 
 def scale_shift(raw, par):
