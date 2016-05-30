@@ -1,6 +1,6 @@
 import numpy as np
 import re
-from dataTransfer import GlobalVar6, GlobalVar9, ExcludedData, ImportData
+from dataTransfer import GlobalVar6, GlobalVar9, ExcludedData, DataBase, ImportData
 
 
 def open_file(filename, key):
@@ -17,6 +17,8 @@ def open_file(filename, key):
         else:
             pass
     import_data = ij[np.argsort(ij, axis=0)][:, 0]
+    ImportData.value['filein'] = import_data
+    DataBase(filein=import_data)
     return import_data
 
 
@@ -56,8 +58,11 @@ def save_file(save_name, value, data, datafit, par):
     else:
         pass
 
-    # write raw data
+    # &namelist can be read by OMFIT
+    # namelist starts
     print >> output, "&namelist"
+
+    # write raw data
     print >> output, ";#raw data\n"
     print >> output, ";  #" + str(par['RhoPsi'])
     rawx = str(data.x[0])
@@ -119,4 +124,5 @@ def save_file(save_name, value, data, datafit, par):
     except:
         pass
 
+    # namelist ends
     print >> output, "/"

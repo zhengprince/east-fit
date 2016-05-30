@@ -135,8 +135,8 @@ class ExcludedData(object):
         if default:
             if isinstance(self.library['processed'], Data):
                 if len(self.library['processed'].x) is not 0:
-                    for i in input_[:, 0]:
-                        if i in self.library['processed'].x[0]:
+                    for i in input_[:, 1]:
+                        if i in self.library['processed'].y:
                             pass
                         else:
                             self.library['processed'].x = [np.hstack((self.library['processed'].x[0], input_[:, 0][0]))]
@@ -144,10 +144,6 @@ class ExcludedData(object):
                 else:
                     self.library['processed'].x = [input_[:, 0]]
                     self.library['processed'].y = input_[:, 1]
-                # try:
-                #     self.library['data'] = self.library['data'][np.argsort(self.library['data'], axis=0)][:, 0]
-                # except (TypeError, IndexError):
-                #     pass
             else:
                 self.library['processed'].x = [input_[:, 0]]
                 self.library['processed'].y = input_[:, 1]
@@ -155,19 +151,11 @@ class ExcludedData(object):
             if len(self.library['processed'].x) is not 0:
                 for i in input_[:, 0]:
                     foo = self.library['processed'].x[0] != i
-                    # for j in range(len(foo)):
-                    #     foo[j] = foo[j].any()
-                    # foo = foo[:, 0]
-                    # self.library['processed'] = self.library['processed'][foo]
-                    # if not self.library['processed']:
-                    #     self.library['processed'] = None
                     self.library['processed'].x[0] = self.library['processed'].x[0][foo]
                     self.library['processed'].y = self.library['processed'].y[foo]
             else:
                 pass
 
-        # from mplCanvasWrapper import scale_shift
-        # self.library['processed'] = scale_shift(self.library['data'], par)
         print "self.library['processed']=", self.library['processed']
 
 
@@ -199,7 +187,9 @@ class ImportData(object):
                  processed_d4=data,
                  diagnostic5=np.array([]),
                  time5=float,
-                 processed_d5=data)
+                 processed_d5=data,
+                 filein=np.array([]),
+                 processed_filein=data)
 
     def __init__(self,
                  par,  # parameter from main window
@@ -223,8 +213,11 @@ class ImportData(object):
             # efit_dir = '/nfs_share/users/zhengzhen/Desktop/kefit_tutor/62946/mag'
             # filename = '/nfs_share/users/zhengzhen/Desktop/kefit_tutor/62946/profiles/Teprof_2000.txt'
             yyy = RZmap(shot, time, efit_dir, filename)
-            # print yyy
-            self.value['data'] = yyy['rhoY']
+            print yyy
+            if rhopsi == 'rho':
+                self.value['data'] = yyy['rhoY']
+            elif rhopsi == 'psi':
+                self.value['data'] = yyy['psiY']
         else:
 
             # delete the selected data from the whole data

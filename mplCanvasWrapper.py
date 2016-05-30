@@ -12,7 +12,7 @@ ee = 1.602e-19
 zz = 6  # Carbon
 zeff = 2.5  #
 nedge = 10  # edge points to fix current
-rho = np.linspace(0, 1.06, 54)
+rho = np.linspace(0, 1.0, 51)
 
 
 def line_picker(line, event):
@@ -38,7 +38,7 @@ def line_picker(line, event):
         return False, dict()
     xdata = line.get_xdata()
     ydata = line.get_ydata()
-    maxd = 0.025
+    maxd = 0.05
     d = np.sqrt((xdata - event.xdata) ** 2. + (ydata - event.ydata) ** 2.)
     ind = np.nonzero(np.less_equal(d, maxd))
     if len(ind):
@@ -114,7 +114,7 @@ class MplCanvas(FigureCanvas):
             self.ax.set_ylabel(r'$n_e (10^{19}m^{-3})$', fontsize=16)
 
         # draw the title
-        print 'title'
+        # print 'title'
         title = get_title(par)
         self.ax.set_title(title)
 
@@ -182,8 +182,9 @@ class MplCanvas(FigureCanvas):
             if not par['SourceSwitch']:
                 if self.l3:
                     self.ax.lines.remove(self.l3)
-                self.l3, = self.ax.plot(ImportData.value['processed_data'].x[0], ImportData.value['processed_data'].y,
-                                        'yo', label='raw data', picker=line_picker, alpha=0.8)
+                self.l3, = \
+                    self.ax.plot(ImportData.value['processed_filein'].x[0], ImportData.value['processed_filein'].y,
+                                 'yo', label='raw data', picker=line_picker, alpha=0.8)
         else:
             if self.l3:
                 self.ax.lines.remove(self.l3)
@@ -202,8 +203,8 @@ class MplCanvas(FigureCanvas):
             if len(ExcludedData.library['processed'].x) is not 0:
                 if self.l2:
                     self.ax.lines.remove(self.l2)
-                self.l2, = self.ax.plot(excluded_data.x[0], excluded_data.y, 'kx', markersize=10,
-                                        label='excluded data', picker=line_picker)
+                self.l2, = self.ax.plot(ExcludedData.library['processed'].x[0], ExcludedData.library['processed'].y,
+                                        'kx', markersize=10, label='excluded data', picker=line_picker)
             else:
                 if self.l2:
                     self.ax.lines.remove(self.l2)
@@ -295,6 +296,8 @@ class MplCanvas(FigureCanvas):
             # print "before process excluded data\n"
             # print "value['processed_data]:\n", ImportData.value['processed_data']
             # print "value['processed_d1]:\n", ImportData.value['processed_d1']
+            print 'self.pickx: ', self.pickx
+            print 'len(self.pickx[0]): ', len(self.pickx[0])
             if len(self.pickx[0]) != 1:
                 pick = np.array(zip(self.pickx[0], self.picky[0]))
             else:
@@ -422,6 +425,13 @@ def process_data(par):
             y = np.array(ImportData.value['processed_d5'].y)
             temp = np.array([x, y]).T
             DataBase(d5=temp)
+    else:
+        if ImportData.value['filein'].any():
+            ImportData.value['processed_filein'] = scale_shift(ImportData.value['filein'], par)
+            x = ImportData.value['processed_filein'].x[0]
+            y = np.array(ImportData.value['processed_filein'].y)
+            temp = np.array([x, y]).T
+            DataBase(filein=temp)
 
 
 def scale_shift(raw, par):
@@ -582,7 +592,7 @@ def process_excluded_data(label,  # label got from event.artist._label, used to 
     """
     # ImportData.value['processed_data'] = process_pick(pick, ImportData.value['processed_data'], par)
     ImportData.value['data'], ImportData.value['processed_data'] \
-        = pppp(ImportData.value['processed_data'], pick, par)
+        = process_pick(ImportData.value['processed_data'], ImportData.value['data'], pick, par)
     # if type(ExcludedData.library['processed']).__module__ != np.__name__:
     #     # if len(ExcludedData.library['processed']) is not 0:
     #     #     ExcludedData.library['processed'] = process_pick(pick, ExcludedData.library['processed'], label)
@@ -590,7 +600,10 @@ def process_excluded_data(label,  # label got from event.artist._label, used to 
     # else:
     #     if len(ExcludedData.library['processed']) is not 0:
     #         ExcludedData.library['processed'] = process_pick(pick, ExcludedData.library['processed'], label)
-    if label == 'Thomson (Core)':
+    if label == 'raw data':
+        ImportData.value['filein'], ImportData.value['processed_filein'] \
+            = process_pick(ImportData.value['processed_filein'], ImportData.value['filein'], pick, par)
+    elif label == 'Thomson (Core)':
         if text == 'Te':
             # x = ImportData.value['processed_d1'].copy().x[0]
             # y = ImportData.value['processed_d1'].copy().y
@@ -602,52 +615,56 @@ def process_excluded_data(label,  # label got from event.artist._label, used to 
             # d1, d2 = process_pick(pick, xx[:, 0], xx[:, 1], par)
             # ImportData.value['diagnostic1'] = np.array([d1, d2]).T
             ImportData.value['diagnostic1'], ImportData.value['processed_d1']\
-                = pppp(ImportData.value['processed_d1'], pick, par)
+                = process_pick(ImportData.value['processed_d1'], ImportData.value['diagnostic1'], pick, par)
         elif text == 'ne':
             # ImportData.value['processed_d2'] \
                 # = process_pick(pick, ImportData.value['processed_d2'], par)
             ImportData.value['diagnostic2'], ImportData.value['processed_d2']\
-                = pppp(ImportData.value['processed_d2'], pick, par)
+                = process_pick(ImportData.value['processed_d2'], ImportData.value['diagnostic2'], pick, par)
     elif label == 'CXRS (Core)':
         # ImportData.value['processed_d1'] \
         #     = process_pick(pick, ImportData.value['processed_d1'], par)
         ImportData.value['diagnostic1'], ImportData.value['processed_d1']\
-            = pppp(ImportData.value['processed_d1'], pick, par)
+            = process_pick(ImportData.value['processed_d1'], ImportData.value['diagnostic1'], pick, par)
     elif label == 'ECE':
         # ImportData.value['processed_d3'] \
         #     = process_pick(pick, ImportData.value['processed_d3'], par)
         ImportData.value['diagnostic3'], ImportData.value['processed_d3']\
-            = pppp(ImportData.value['processed_d3'], pick, par)
+            = process_pick(ImportData.value['processed_d3'], ImportData.value['diagnostic3'], pick, par)
     elif label == 'Michelson':
         # ImportData.value['processed_d4'] \
         #     = process_pick(pick, ImportData.value['processed_d4'], par)
         ImportData.value['diagnostic4'], ImportData.value['processed_d4']\
-            = pppp(ImportData.value['processed_d4'], pick, par)
+            = process_pick(ImportData.value['processed_d4'], ImportData.value['diagnostic4'], pick, par)
     elif label == 'TXCS':
         if text == 'Te':
             # ImportData.value['processed_d5'] \
             #     = process_pick(pick, ImportData.value['processed_d5'], par)
             ImportData.value['diagnostic5'], ImportData.value['processed_d5']\
-                = pppp(ImportData.value['processed_d5'], pick, par)
+                = process_pick(ImportData.value['processed_d5'], ImportData.value['diagnostic5'], pick, par)
         elif text == 'Ti':
             # ImportData.value['processed_d3'] \
             #     = process_pick(pick, ImportData.value['processed_d3'], par)
             ImportData.value['diagnostic3'], ImportData.value['processed_d3']\
-                = pppp(ImportData.value['processed_d3'], pick, par)
+                = process_pick(ImportData.value['processed_d3'], ImportData.value['diagnostic3'], pick, par)
     elif label == 'Reflectometry':
         # ImportData.value['processed_d1'] \
         #     = process_pick(pick, ImportData.value['processed_d1'], par)
         ImportData.value['diagnostic1'], ImportData.value['processed_d1']\
-            = pppp(ImportData.value['processed_d1'], pick, par)
+            = process_pick(ImportData.value['processed_d1'], ImportData.value['diagnostic1'], pick, par)
     elif label == 'POINT':
         # ImportData.value['processed_d3'] \
         #     = process_pick(pick, ImportData.value['processed_d3'], par)
         ImportData.value['diagnostic3'], ImportData.value['processed_d3']\
-            = pppp(ImportData.value['processed_d3'], pick, par)
+            = process_pick(ImportData.value['processed_d3'], ImportData.value['diagnostic3'], pick, par)
     elif label == 'excluded data':
         for i in DataBase.library.values():
             print 'a'
-            for j in pick:
+            pick_tmp1 = Data()
+            pick_tmp1.x = [pick[:, 0]]
+            pick_tmp1.y = pick[:, 1]
+            pick_tmp1 = undo_scale_shift(pick_tmp1, par)
+            for j in pick_tmp1:
                 if j in i:
                     print 'b'
                     for key, var in DataBase.library.iteritems():
@@ -688,25 +705,56 @@ def process_excluded_data(label,  # label got from event.artist._label, used to 
                             process_pick2(pick, ExcludedData.library['processed'], key, par)
 
 
-def pppp(p, pick, par):
+# def pppp(p, pick, par):
+#     """
+#     delete the diagnostic point which is excluded
+#     :param p: processed diagnostic
+#     :param pick: pick
+#     :param par: par
+#     :return: diagnostic without the excluded point, and processed diagnostic
+#     """
+#     x = p.copy().x[0]
+#     y = p.copy().y
+#     x, y = process_pick(pick, x, y, par)
+#     foo = Data()
+#     foo.x = [x]
+#     foo.y = y
+#     xx = undo_scale_shift(foo, par)
+#     d1, d2 = process_pick(pick, xx[:, 0], xx[:, 1], par)
+#     d = np.array([d1, d2]).T
+#     return d, foo
+def process_pick(processed, data, pick, par):
     """
-    delete the diagnostic point which is excluded
-    :param p: processed diagnostic
+    if pick is in processed, delete the diagnostic point, return new processed and data
+    if not, return original processed and data
+    :param processed: original processed
+    :param data: original data
     :param pick: pick
-    :param par: par
-    :return: diagnostic without the excluded point, and processed diagnostic
+    :param par: parameter
+    :return: processed, data
     """
-    x = p.copy().x[0]
-    y = p.copy().y
-    x, y = process_pick(pick, x, y, par)
-    foo = Data()
-    foo.x = [x]
-    foo.y = y
-    xx = undo_scale_shift(foo, par)
-    d1, d2 = process_pick(pick, xx[:, 0], xx[:, 1], par)
-    d = np.array([d1, d2]).T
-    return d, foo
+    for i in pick[:, 0]:
+        if i in processed.x[0]:  # if pick is in processed, delete the diagnostic point, return new processed and data
+            # delete the point from processed
+            temp1 = processed.copy()
+            ind = temp1.x[0] != i
+            temp1.x[0] = temp1.x[0][ind]
+            temp1.y = temp1.y[ind]
+            # get data corresponding to processed
+            temp2 = undo_scale_shift(temp1, par)
 
+            # get point in pick corresponding to i
+            index = pick[:, 0] == i
+            j = pick[:, 1][index][0]
+            point = np.array([[i, j]])
+            # add the point to ExcludedData.library['processed']
+            ExcludedData(point)
+            # get data corresponding to processed of excluded, and add it to ExcludedData.library['data']
+            ExcludedData.library['data'] = undo_scale_shift(ExcludedData.library['processed'], par)
+            # return new processed and data
+            return temp2, temp1
+        else:  # if not, return original processed and data
+            return data, processed
 
 # def process_pick(pick, data, par):
 #     temp = data.copy()
@@ -732,28 +780,31 @@ def pppp(p, pick, par):
 #     return temp
 
 
-def process_pick(pick, x, y, par):
-    # excluded = np.array([[pick[0][0][0], pick[1][0][0]]])
-    for i in pick[:, 0]:
-        if i in x:
-            # if label not in 'excluded data':
-            ind = x != i
-            x = x[ind]
-            y = y[ind]
-
-            ExcludedData(pick)
-
-            ExcludedData.library['data'] = undo_scale_shift(ExcludedData.library['processed'], par)
-            print "in process_pick:\nExcludedData.library['data']=\n", ExcludedData.library['data']
-            # else:
-            #     temp.x[0] = np.hstack((temp.x[0], i))
-            #     index = pick[:, 0] == i
-            #     j = pick[:, 1][index][0]
-            #     temp.y = np.hstack((temp.y, j))
-            #     ExcludedData(pick, False)
-            # else:
-            #     pass
-    return x, y
+# def process_pick(pick, x, y, par):
+#     # excluded = np.array([[pick[0][0][0], pick[1][0][0]]])
+#     for i in pick[:, 0]:
+#         if i in x:
+#             # if label not in 'excluded data':
+#             ind = x != i
+#             x = x[ind]
+#             y = y[ind]
+#
+#             index = pick[:, 0] == i
+#             j = pick[:, 1][index][0]
+#             point = np.array([[i, j]])
+#             ExcludedData(point)
+#
+#             ExcludedData.library['data'] = undo_scale_shift(ExcludedData.library['processed'], par)
+#             print "in process_pick:\nExcludedData.library['data']=\n", ExcludedData.library['data']
+#             # else:
+#             #     temp.x[0] = np.hstack((temp.x[0], i))
+#             #     index = pick[:, 0] == i
+#             #     j = pick[:, 1][index][0]
+#             #     temp.y = np.hstack((temp.y, j))
+#             #     ExcludedData(pick, False)
+#             # else:
+#             #     pass
+#     return x, y
 
 
 def process_pick2(pick, exclude, key, par):
@@ -764,6 +815,7 @@ def process_pick2(pick, exclude, key, par):
     :param key: d1, d2, d3, d4, d5
     :param par: par
     """
+    print "in process_pick2, before:\nExcludedData.library=\n", ExcludedData.library
     temp1 = ImportData.value['processed_data'].copy()
     if par['SourceSwitch']:
         if key == 'd1':
@@ -777,42 +829,60 @@ def process_pick2(pick, exclude, key, par):
         if key == 'd5':
             temp2 = ImportData.value['processed_d5'].copy()
     else:
-        pass
+        temp2 = ImportData.value['processed_filein'].copy()
     for i in pick[:, 0]:
         if i in exclude.x[0]:
-            temp1.x[0] = np.hstack((temp1.x[0], i))
+            # if par['SourceSwitch']:
             index = pick[:, 0] == i
             j = pick[:, 1][index][0]
+
+            temp1.x[0] = np.hstack((temp1.x[0], i))
             temp1.y = np.hstack((temp1.y, j))
+            # sort by ascending
+            sort = np.argsort(temp1.x[0], axis=0)
+            temp1.x[0] = temp1.x[0][sort]
+            temp1.y = temp1.y[sort]
+            temp3 = undo_scale_shift(temp1, par)
 
-            if par['SourceSwitch']:
-                temp2.x[0] = np.hstack((temp2.x[0], i))
-                index = pick[:, 0] == i
-                j = pick[:, 1][index][0]
-                temp2.y = np.hstack((temp2.y, j))
+            temp2.x[0] = np.hstack((temp2.x[0], i))
+            temp2.y = np.hstack((temp2.y, j))
+            # sort by ascending
+            sort = np.argsort(temp2.x[0], axis=0)
+            temp2.x[0] = temp2.x[0][sort]
+            temp2.y = temp2.y[sort]
+            temp4 = undo_scale_shift(temp2, par)
 
-            ExcludedData(pick, False)
-
+            point = np.array([[i, j]])
+            ExcludedData(point, False)
             ExcludedData.library['data'] = undo_scale_shift(ExcludedData.library['processed'], par)
             print "in process_pick2:\nExcludedData.library['data']=\n", ExcludedData.library['data']
 
-    if par['SourceSwitch']:
-        if key == 'd1':
-            ImportData.value['processed_data'], ImportData.value['processed_d1'] = temp1, temp2
-        if key == 'd2':
-            ImportData.value['processed_data'], ImportData.value['processed_d2'] = temp1, temp2
-        if key == 'd3':
-            ImportData.value['processed_data'], ImportData.value['processed_d3'] = temp1, temp2
-        if key == 'd4':
-            ImportData.value['processed_data'], ImportData.value['processed_d4'] = temp1, temp2
-        if key == 'd5':
-            ImportData.value['processed_data'], ImportData.value['processed_d5'] = temp1, temp2
-    else:
-        ImportData.value['processed_data'] = temp1
+            if par['SourceSwitch']:
+                if key == 'd1':
+                    ImportData.value['processed_data'], ImportData.value['processed_d1'] = temp1, temp2
+                    ImportData.value['data'], ImportData.value['diagnostic1'] = temp3, temp4
+                if key == 'd2':
+                    ImportData.value['processed_data'], ImportData.value['processed_d2'] = temp1, temp2
+                    ImportData.value['data'], ImportData.value['diagnostic2'] = temp3, temp4
+                if key == 'd3':
+                    ImportData.value['processed_data'], ImportData.value['processed_d3'] = temp1, temp2
+                    ImportData.value['data'], ImportData.value['diagnostic3'] = temp3, temp4
+                if key == 'd4':
+                    ImportData.value['processed_data'], ImportData.value['processed_d4'] = temp1, temp2
+                    ImportData.value['data'], ImportData.value['diagnostic4'] = temp3, temp4
+                if key == 'd5':
+                    ImportData.value['processed_data'], ImportData.value['processed_d5'] = temp1, temp2
+                    ImportData.value['data'], ImportData.value['diagnostic5'] = temp3, temp4
+            else:
+                ImportData.value['processed_data'], ImportData.value['processed_filein'] = temp1, temp2
+                ImportData.value['data'], ImportData.value['filein'] = temp3, temp4
+        else:
+            pass
+    print "in process_pick2, after:\nExcludedData.library=\n", ExcludedData.library
 
 
 def undo_scale_shift(data, par):
-    temp = data.copy()
+    temp = data.deepcopy()
     print "in undo_scale_shift:\ntemp=\n", temp
     h = temp.x[0].shape[0]
     zoom = 1 + par['Stretch'] / 1000.
