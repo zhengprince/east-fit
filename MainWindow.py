@@ -79,6 +79,8 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         tab1.frame_4.hide()
         tab1.spbShot.enterPressed.connect(self.on_bUpdate_clicked)
         tab1.rbFile.toggled.connect(self.on_rbFile_toggled)
+        tab1.rbRhoMap.toggled.connect(self.on_rbRhoMap_toggled)
+        tab1.rbPsiMap.toggled.connect(self.on_rbPsiMap_toggled)
         tab1.leGFileDir.textChanged.connect(self.on_leGFileDir_textChanged)
         tab1.leGFileDir.returnPressed.connect(self.on)
         tab1.leDataDir.textChanged.connect(self.on_leDataDir_textChanged)
@@ -328,6 +330,22 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.par['SourceSwitch'] = 0
         else:
             self.par['SourceSwitch'] = 1
+
+    def on_rbRhoMap_toggled(self):
+        if tab1.rbRhoMap.isChecked():
+            self.sShot.setDisabled(True)
+            self.sTime.setDisabled(True)
+        else:
+            self.sShot.setDisabled(False)
+            self.sTime.setDisabled(False)
+
+    def on_rbPsiMap_toggled(self):
+        if tab1.rbPsiMap.isChecked():
+            self.sShot.setDisabled(True)
+            self.sTime.setDisabled(True)
+        else:
+            self.sShot.setDisabled(False)
+            self.sTime.setDisabled(False)
 
     def plot(self):
         if self.par['Func'] == 'tanh_multi':
