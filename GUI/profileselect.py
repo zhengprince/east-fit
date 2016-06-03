@@ -5,6 +5,7 @@ from PyQt4.QtCore import Qt
 
 from MainWindow import MainWindow
 from Ui_profileselect import Ui_ProfileSelect
+import sys
 
 
 class Panel(QtGui.QWidget, Ui_ProfileSelect):
@@ -98,8 +99,8 @@ class Panel(QtGui.QWidget, Ui_ProfileSelect):
         win.show()
 
 
-if __name__ == "__main__":
-    import sys
+# if __name__ == "__main__":
+def run():
 
     app = QtGui.QApplication(sys.argv)
     mw = Panel()
