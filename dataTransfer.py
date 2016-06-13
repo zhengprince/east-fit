@@ -218,6 +218,8 @@ class ImportData(object):
                 self.value['data'] = yyy['rhoY']
             elif rhopsi == 'psi':
                 self.value['data'] = yyy['psiY']
+            self.value['filein'] = self.value['data']
+            DataBase(filein=self.value['data'])
         else:
 
             # delete the selected data from the whole data
