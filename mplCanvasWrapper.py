@@ -171,7 +171,7 @@ class MplCanvas(FigureCanvas):
             if self.d5:
                 self.ax.lines.remove(self.d5)
             self.d5 = None
-        print ImportData.value
+
         # draw the total
         if not (par['Diag1'] or par['Diag2'] or par['Diag3'] or par['Diag4'] or par['Diag5']):
             if not par['SourceSwitch']:
