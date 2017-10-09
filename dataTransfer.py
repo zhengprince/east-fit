@@ -1,36 +1,27 @@
+import os
 from pmds import mdsconnect, mdsopen, mdsvalue, mdsdisconnect
 
-import numpy as np
-from RZmap import RZmap
 from data import Data
 
-from eastmap import east_mapping
-
-data = Data()
+from eastmap import east_mapping, rho2psi, psi2rho
+from fileIO import *
 
 
 class GlobalVar5(object):
-    value = dict(Params=[])
+    def __init__(self):
+        self.value = dict(Params=[])
 
-    def __init__(self, value):
-        for key in value:
-            self.value[key] = value[key]
-
-    def __call__(self, c):
+    def update(self, c):
         for key in c:
             self.value[key] = c[key]
         return self.value
 
 
 class GlobalVar6(object):
-    value = dict(Params=[])
+    def __init__(self):
+        self.value = dict(Params=[])
 
-    def __init__(self, value):
-        for key in value:
-            self.value[key] = value[key]
-        print 'in GlobalVar6', '\n', self.value
-
-    def __call__(self, c):
+    def update(self, c):
         for key in c:
             self.value[key] = c[key]
         return self.value
@@ -63,471 +54,607 @@ class GlobalVar8(object):
 
 
 class GlobalVar9(object):
-    value = dict(Params=[])
+    def __init__(self):
+        self.value = dict(Params=[])
 
-    def __init__(self, value):
-        for key in value:
-            self.value[key] = value[key]
-        print 'in GlobalVar9', '\n', self.value
-
-    def __call__(self, c):
+    def update(self, c):
         for key in c:
             self.value[key] = c[key]
         return self.value
 
 
 class GlobalVar(object):
-    value6 = dict(Params=[])
-    value7 = dict(Params=[])
-    value8 = dict(Params=[])
-    value9 = dict(Params=[])
+    def __init__(self):
+        # containing all of diagnostics
+        self.value = dict(data_rho=np.array([]),
+                          data_psi=np.array([]),
+                          processed_data_rho=Data(),
+                          processed_data_psi=Data(),
+                          diagnostic1_rho=np.array([]),
+                          diagnostic1_psi=np.array([]),
+                          diagnostic1_err=np.array([]),
+                          time1=float,
+                          processed_d1_rho=Data(),
+                          processed_d1_psi=Data(),
+                          diagnostic2_rho=np.array([]),
+                          diagnostic2_psi=np.array([]),
+                          diagnostic2_err=np.array([]),
+                          time2=float,
+                          processed_d2_rho=Data(),
+                          processed_d2_psi=Data(),
+                          diagnostic3_rho=np.array([]),
+                          diagnostic3_psi=np.array([]),
+                          diagnostic3_err=np.array([]),
+                          time3=float,
+                          processed_d3_rho=Data(),
+                          processed_d3_psi=Data(),
+                          diagnostic4_rho=np.array([]),
+                          diagnostic4_psi=np.array([]),
+                          diagnostic4_err=np.array([]),
+                          time4=float,
+                          processed_d4_rho=Data(),
+                          processed_d4_psi=Data(),
+                          diagnostic5_rho=np.array([]),
+                          diagnostic5_psi=np.array([]),
+                          diagnostic5_err=np.array([]),
+                          time5=float,
+                          processed_d5_rho=Data(),
+                          processed_d5_psi=Data(),
+                          filein_rho=np.array([]),
+                          filein_psi=np.array([]),
+                          processed_filein_rho=Data(),
+                          processed_filein_psi=Data(),
+                          fit=Data())
 
-    def __init__(self, value, index):
-        for key in value:
-            if index == 6:
-                self.value6[key] = value[key]
-            elif index == 7:
-                self.value7[key] = value[key]
-            elif index == 8:
-                self.value8[key] = value[key]
-            elif index == 9:
-                self.value9[key] = value[key]
-        print 'in GlobalVar\n'
+        # excluded data
+        self.library = dict(data_rho=np.array([]),
+                            data_psi=np.array([]),
+                            processed_rho=Data(),
+                            processed_psi=Data())
+        self.database = dict()
 
-    def __call__(self, index):
-        if index == 6:
-            value = self.value6
-        elif index == 7:
-            value = self.value7
-        elif index == 8:
-            value = self.value8
-        elif index == 9:
-            value = self.value9
-        return value
+    def d(self, **kwargs):
+        self.database.update(kwargs)
 
 
-# def upDict():
-#     GlobalVar5.value = {'key': 'var'}
-#     GlobalVar6.value = {'key': 'var'}
-#     GlobalVar7.value = {'key': 'var'}
-#     GlobalVar8.value = {'key': 'var'}
-#     GlobalVar9.value = {'key': 'var'}
-# GlobalVar.c = {'key': 'var'}
-
-
-# def GlobalVar(c):
-#     c = [c]
-#     return c
-class ExcludedData(object):
-    library = dict(data=np.array([]),
-                   processed=data)
-
-    def __init__(self, input_, default=True):
-        """
-        ExcludedData
-        :param input_:  excluded data passed in.
-        :param default: True: add, which is default, False: delete.
-        """
-        print "input_=", input_
-        print "type(input_)=", type(input_)
-        # print "self.library=", self.library
-        print "type(self.library['data'])=", type(self.library['data'])
-        if default:
-            if isinstance(self.library['processed'], Data):
-                if len(self.library['processed'].x) is not 0:
-                    for i in input_[:, 1]:
-                        if i in self.library['processed'].y:
-                            pass
-                        else:
-                            self.library['processed'].x = [np.hstack((self.library['processed'].x[0], input_[:, 0][0]))]
-                            self.library['processed'].y = np.hstack((self.library['processed'].y, input_[:, 1][0]))
-                else:
-                    self.library['processed'].x = [input_[:, 0]]
-                    self.library['processed'].y = input_[:, 1]
+def ExcludedData(library, input_, s, default=True):
+    """
+    ExcludedData
+    :param s:
+    :param library: GlobalVar.library
+    :param input_:  excluded data passed in.
+    :param default: True: add, which is default; False: delete.
+    """
+    # print "input_=", input_
+    # print "type(input_)=", type(input_)
+    # print "library=", library
+    # print "type(library['data_rho'])=", type(library['data_rho'])
+    # for s in 'rho', 'psi':
+    if default:
+        if isinstance(library['processed_' + s], Data):
+            if len(library['processed_' + s].x) is not 0:
+                for i in input_[:, 1]:
+                    if i in library['processed_' + s].y:
+                        pass
+                    else:
+                        library['processed_' + s].x = [np.hstack((library['processed_' + s].x[0], input_[:, 0][0]))]
+                        library['processed_' + s].y = np.hstack((library['processed_' + s].y, input_[:, 1][0]))
             else:
-                self.library['processed'].x = [input_[:, 0]]
-                self.library['processed'].y = input_[:, 1]
+                library['processed_' + s].x = [input_[:, 0]]
+                library['processed_' + s].y = input_[:, 1]
         else:
-            if len(self.library['processed'].x) is not 0:
-                for i in input_[:, 0]:
-                    foo = self.library['processed'].x[0] != i
-                    self.library['processed'].x[0] = self.library['processed'].x[0][foo]
-                    self.library['processed'].y = self.library['processed'].y[foo]
-            else:
-                pass
-
-        print "self.library['processed']=", self.library['processed']
-
-
-class DataBase(object):
-    library = dict()
-
-    def __init__(self, **kwargs):
-        """
-        ExcludedData
-        :param input_:  dict passed in
-        """
-        self.library = self.library.update(kwargs)
+            library['processed_' + s].x = [input_[:, 0]]
+            library['processed_' + s].y = input_[:, 1]
+    else:
+        if len(library['processed_' + s].x) is not 0:
+            for i in input_[:, 0]:
+                foo = library['processed_' + s].x[0] != i
+                library['processed_' + s].x[0] = library['processed_' + s].x[0][foo]
+                library['processed_' + s].y = library['processed_' + s].y[foo]
+        else:
+            pass
+    # print "library['processed_rho']=", library['processed_rho']
+    return library
 
 
 class ImportData(object):
-    value = dict(data=np.array([]),  # contain all of diagnostics
-                 processed_data=data,
-                 diagnostic1=np.array([]),
-                 time1=float,
-                 processed_d1=data,
-                 diagnostic2=np.array([]),
-                 time2=float,
-                 processed_d2=data,
-                 diagnostic3=np.array([]),
-                 time3=float,
-                 processed_d3=data,
-                 diagnostic4=np.array([]),
-                 time4=float,
-                 processed_d4=data,
-                 diagnostic5=np.array([]),
-                 time5=float,
-                 processed_d5=data,
-                 filein=np.array([]),
-                 processed_filein=data)
+    def __init__(self):
+        self.rhopsi = ''
+        self.shot = int
+        self.time = int
+        self.efitDir = ''
+        self.fm = False
 
-    def __init__(self,
-                 par,  # parameter from main window
-                 text='',  # diagnostic name
-                 default=True):  # True: data stack, False: data delete
+    def file_file(self,
+                  globalvar,  # GlobalVar
+                  par):  # parameter from main window
         """
-        __init__
-        :param par:                # parameter from main window
-        :param text:               # diagnostic name
-        :param default:            # True: data stack, False: data delete
+        file_file
+        :param globalvar:          GlobalVar
+        :param par:                parameter from main window
         """
-        rhopsi = par['RhoPsi']
-        shot = par['Shot']
-        time = par['Time']
+        self.shot = par['Shot']
+        self.time = par['Time']
         # print shot, type(shot), time, type(time)
-        if not par['SourceSwitch']:
-            filename = str(par['FileName'])
-            efit_dir = str(par['EfitDir'])
-            # shot = 62946
-            # time = 3800
-            # efit_dir = '/nfs_share/users/zhengzhen/Desktop/kefit_tutor/62946/mag'
-            # filename = '/nfs_share/users/zhengzhen/Desktop/kefit_tutor/62946/profiles/Teprof_2000.txt'
-            yyy = RZmap(shot, time, efit_dir, filename)
-            print yyy
-            if rhopsi == 'rho':
-                self.value['data'] = yyy['rhoY']
-            elif rhopsi == 'psi':
-                self.value['data'] = yyy['psiY']
-            self.value['filein'] = self.value['data']
-            DataBase(filein=self.value['data'])
-        else:
+        fileName = str(par['FileName'])
+        efitDir = str(par['EfitDir'])
+        gFilePath = os.path.dirname(efitDir)
+        # dataFile = np.loadtxt(fileName)
+        # if (dataFile[:, -1] > 1.e10).any():
+        #     print 'aaa'
+        #     dataFile[:, -1] = dataFile[:, -1]/1.e19
+        # elif (10. < dataFile[:, -1]).any() and (dataFile[:, -1] < 10000.).any():
+        #     dataFile[:, -1] = dataFile[:, -1]/1000.
+        # rz = dataFile[:, 0:2]
+        dataFile = openFile(fileName)
+        mapping = east_mapping(self.shot, self.time, gFilePath, dataFile['rz'])
+        resultRho = np.array([mapping['rho'], dataFile['data']]).T
+        resultPsi = np.array([mapping['psi'], dataFile['data']]).T
+        resultRho = resultRho[np.argsort(resultRho, axis=0)][:, 0]
+        resultPsi = resultPsi[np.argsort(resultPsi, axis=0)][:, 0]
+        globalvar.value['data_rho'] = resultRho
+        globalvar.value['data_psi'] = resultPsi
+        # mapping = RZmap(self.shot, self.time, gFileDir, fileName)
+        # globalvar.value['data_rho'] = mapping['rho']
+        # globalvar.value['data_psi'] = mapping['psi']
+        globalvar.value['filein_rho'] = globalvar.value['data_rho']
+        globalvar.value['filein_psi'] = globalvar.value['data_psi']
+        globalvar.d(filein_rho=globalvar.value['data_rho'])
+        globalvar.d(filein_psi=globalvar.value['data_psi'])
+        return globalvar
 
-            # delete the selected data from the whole data
-            if not default:
-                if self.value['data'].any():
-                    if text == 'Reflectometry':
-                        target = self.value['diagnostic1']
-                    elif text == 'Thomson (Core)':
-                        if par['Profile'] == 'Te':
-                            target = self.value['diagnostic1']
-                        elif par['Profile'] == 'ne':
-                            target = self.value['diagnostic2']
-                    elif text == 'ECE':
-                        target = self.value['diagnostic3']
-                    elif text == 'Michelson':
-                        target = self.value['diagnostic4']
-                    elif text == 'TXCS':
-                        if par['Profile'] == 'Te':
-                            target = self.value['diagnostic5']
-                        elif par['Profile'] == 'Ti':
-                            target = self.value['diagnostic3']
-                    elif text == 'CXRS (Core)':
-                        target = self.value['diagnostic1']
-                    elif text == 'POINT':
-                        target = self.value['diagnostic4']
-                    for i in target:
-                        foo = self.value['data'] != i
-                        for j in range(len(foo)):
-                            foo[j] = foo[j].any()
-                        foo = foo[:, 0]
-                        self.value['data'] = self.value['data'][foo]
-                else:
-                    pass
+    def mds_file(self, globalvar, par):
+        self.shot = par['Shot']
+        self.time = par['Time']
+        # mdsconnect('202.127.204.12')
+        mdsopen(str(par['Tree']), self.shot)
+        rz = globalvar.value['data_rho']['rz']
+        mapping = east_mapping(self.shot, self.time, str(par['Tree']), rz)
+        resultRho = np.array([mapping['rho'], globalvar.value['data_rho']['data']]).T
+        resultPsi = np.array([mapping['psi'], globalvar.value['data_psi']['data']]).T
+        resultRho = resultRho[np.argsort(resultRho, axis=0)][:, 0]
+        resultPsi = resultPsi[np.argsort(resultPsi, axis=0)][:, 0]
+        globalvar.value['data_rho'] = resultRho
+        globalvar.value['data_psi'] = resultPsi
+        globalvar.value['filein_rho'] = globalvar.value['data_rho']
+        globalvar.value['filein_psi'] = globalvar.value['data_psi']
+        globalvar.d(filein_rho=globalvar.value['data_rho'])
+        globalvar.d(filein_psi=globalvar.value['data_psi'])
+        return globalvar
 
-            # default: not delete the data, obtain it
-            else:
+    def mds_mds_n_file_mds(self,
+                           globalvar,  # GlobalVar
+                           par,  # parameter from main window
+                           text='',  # diagnostic name
+                           default=True,  # True: data stack, False: delete data
+                           file_mds=False):  # True=get gfile from file, data from mds
+        """
+        get gfile from mds or file, data from mds
+        :param globalvar:          GlobalVar
+        :param par:                parameter from main window
+        :param text:               diagnostic name
+        :param default:            True: stack data, False: delete data
+        :param file_mds:           True=get gfile from file, data from mds
+        """
+        # self.rhopsi = par['RhoPsi']
+        self.shot = par['Shot']
+        self.time = par['Time']
+        self.efitDir = par['EfitDir']
+        self.fm = file_mds
+
+        # delete the selected diagnostic data from the whole data
+        if not default:
+            if globalvar.value['data_rho'].any() or globalvar.value['data_psi'].any():
+                target1 = np.array([])
+                target2 = target1
                 if text == 'Reflectometry':
-                    target = self.value['diagnostic1']
+                    target1 = globalvar.value['diagnostic1_rho']
+                    target2 = globalvar.value['diagnostic1_psi']
                 elif text == 'Thomson (Core)':
                     if par['Profile'] == 'Te':
-                        target = self.value['diagnostic1']
+                        target1 = globalvar.value['diagnostic1_rho']
+                        target2 = globalvar.value['diagnostic1_psi']
                     elif par['Profile'] == 'ne':
-                        target = self.value['diagnostic2']
+                        target1 = globalvar.value['diagnostic2_rho']
+                        target2 = globalvar.value['diagnostic2_psi']
                 elif text == 'ECE':
-                    target = self.value['diagnostic3']
+                    target1 = globalvar.value['diagnostic3_rho']
+                    target2 = globalvar.value['diagnostic3_psi']
                 elif text == 'Michelson':
-                    target = self.value['diagnostic4']
+                    target1 = globalvar.value['diagnostic4_rho']
+                    target2 = globalvar.value['diagnostic4_psi']
                 elif text == 'TXCS':
                     if par['Profile'] == 'Te':
-                        target = self.value['diagnostic5']
+                        target1 = globalvar.value['diagnostic5_rho']
+                        target2 = globalvar.value['diagnostic5_psi']
                     elif par['Profile'] == 'Ti':
-                        target = self.value['diagnostic3']
+                        target1 = globalvar.value['diagnostic3_rho']
+                        target2 = globalvar.value['diagnostic3_psi']
                 elif text == 'CXRS (Core)':
-                    target = self.value['diagnostic1']
+                    target1 = globalvar.value['diagnostic1_rho']
+                    target2 = globalvar.value['diagnostic1_psi']
                 elif text == 'POINT':
-                    target = self.value['diagnostic4']
+                    target1 = globalvar.value['diagnostic4_rho']
+                    target2 = globalvar.value['diagnostic4_psi']
+                for i in target1:
+                    foo = globalvar.value['data_rho'] != i
+                    for j in range(len(foo)):
+                        foo[j] = foo[j].any()
+                    foo = foo[:, 0]
+                    globalvar.value['data_rho'] = globalvar.value['data_rho'][foo]
+                for i in target2:
+                    foo = globalvar.value['data_psi'] != i
+                    for j in range(len(foo)):
+                        foo[j] = foo[j].any()
+                    foo = foo[:, 0]
+                    globalvar.value['data_psi'] = globalvar.value['data_psi'][foo]
+            else:
+                pass
 
-                # if the data exist, use it
-                if target.any():
-                    self.value['data'] = target
+        # default: not delete the data, obtain it and add them into the whole
+        else:
+            if text == 'Reflectometry':
+                target1 = globalvar.value['diagnostic1_rho']
+                target2 = globalvar.value['diagnostic1_psi']
+            elif text == 'Thomson (Core)':
+                if par['Profile'] == 'Te':
+                    target1 = globalvar.value['diagnostic1_rho']
+                    target2 = globalvar.value['diagnostic1_psi']
+                elif par['Profile'] == 'ne':
+                    target1 = globalvar.value['diagnostic2_rho']
+                    target2 = globalvar.value['diagnostic2_psi']
+            elif text == 'ECE':
+                target1 = globalvar.value['diagnostic3_rho']
+                target2 = globalvar.value['diagnostic3_psi']
+            elif text == 'Michelson':
+                target1 = globalvar.value['diagnostic4_rho']
+                target2 = globalvar.value['diagnostic4_psi']
+            elif text == 'TXCS':
+                if par['Profile'] == 'Te':
+                    target1 = globalvar.value['diagnostic5_rho']
+                    target2 = globalvar.value['diagnostic5_psi']
+                elif par['Profile'] == 'Ti':
+                    target1 = globalvar.value['diagnostic3_rho']
+                    target2 = globalvar.value['diagnostic3_psi']
+            elif text == 'CXRS (Core)':
+                target1 = globalvar.value['diagnostic1_rho']
+                target2 = globalvar.value['diagnostic1_psi']
+            elif text == 'POINT':
+                target1 = globalvar.value['diagnostic4_rho']
+                target2 = globalvar.value['diagnostic4_psi']
 
-                # if not, obtain it
-                else:
-                    # shot = 63688  # 56963
-                    # time = 4019  # 3418
-                    subtree = ''
-                    node_r = ''
-                    node_z = ''
-                    node_p = ''
-                    if text == 'Reflectometry':
-                        subtree = 'ReflJ_EAST'
-                        node_r = 'R_ReflJ'
-                        node_z = 'Z_ReflJ'
-                        node_p = 'ne_ReflJ'
-                    elif text == 'Thomson (Core)':
-                        subtree = 'TS_EAST'
-                        node_r = 'R_coreTS'
-                        node_z = 'Z_coreTS'
-                        if par['Profile'] == 'Te':
-                            node_p = 'Te_coreTS'
-                            node_err = 'Te_coreTSerr'
-                        elif par['Profile'] == 'ne':
-                            node_p = 'ne_coreTS'
-                            node_err = 'ne_coreTSerr'
-                    elif text == 'ECE':
-                        subtree = 'HRS_EAST'
-                        node_r = 'R_HRS'
-                        node_z = 'Z_HRS'
-                        node_p = 'Te_HRS'
-                    elif text == 'Michelson':
-                        subtree = 'MPI_Analy'
-                        node_r = 'R_MI'
-                        node_z = 'Z_MI'
-                        node_p = 'Te_MI'
-                    elif text == 'TXCS':
-                        subtree = 'TXCS_EAST'
-                        node_r = 'R_TXCS'
-                        node_z = 'Z_TXCS'
-                        if par['Profile'] == 'Te':
-                            node_p = 'Te_TXCS'
-                        elif par['Profile'] == 'Ti':
-                            node_p = 'Ti_TXCS'
-                    elif text == 'CXRS (Core)':
-                        subtree = 'CXRS_EAST'
-                        node_r = 'R_CXRS_T'
-                        node_z = 'Z_CXRS_T'
-                        node_p = 'Ti_CXRS_T'
-                    elif text == 'POINT':
-                        subtree = 'POINT_Analy'
-                        node_r = ''
-                        node_z = ''
-                        node_p = ''
-                    node_times = 'dim_of(' + node_p + ')'
-                    data_r = 'data(' + node_r + ')'
-                    data_z = 'data(' + node_z + ')'
-                    data_p = 'data(' + node_p + ')'
-                    mds_server = '202.127.204.12'
-                    time /= 1000.
-                    efit_tree = str(par['Tree'])
-                    mdsconnect(mds_server)
-                    mdsopen(subtree, shot)
+            # if the data exist, use it
+            if target1.any():
+                globalvar.value['data_rho'] = target1
+            elif target2.any():
+                globalvar.value['data_psi'] = target2
 
-                    result = []
-                    if text == 'Reflectometry':
-                        result = self.reflectometry(shot, time, node_times, data_r, data_p, efit_tree, rhopsi)
-                    elif text == 'Thomson (Core)':
-                        result = self.thomson_core(shot, time, node_times, data_r, data_z, data_p, efit_tree, rhopsi,
-                                                   par)
-                    elif text == 'POINT':
-                        result = self.point(time)
-                    elif text == 'TXCS':
-                        result = self.txcs(shot, time, node_times, data_z, data_p, efit_tree, rhopsi, par)
-                    elif text == 'CXRS (core)':
-                        result = self.cxrs(shot, time, node_times, data_r, data_p, efit_tree, rhopsi)
-                    elif text == 'ECE':
-                        result = self.ece(shot, time, node_times, data_r, data_p, efit_tree, rhopsi)
-                    elif text == 'Michelson':
-                        result = self.michelson(shot, time, node_times, data_r, data_p, efit_tree, rhopsi)
-                    mdsdisconnect()
+            # if not, obtain it
+            else:
+                subtree = ''
+                node_r = ''
+                node_z = ''
+                node_p = ''
+                node_err = ''
+                if text == 'Reflectometry':
+                    subtree = 'ReflJ_EAST'
+                elif text == 'Thomson (Core)':
+                    subtree = 'TS_EAST'
+                    node_r = 'R_coreTS'
+                    node_z = 'Z_coreTS'
+                    if par['Profile'] == 'Te':
+                        node_p = 'Te_coreTS'
+                        node_err = 'Te_coreTSerr'
+                    elif par['Profile'] == 'ne':
+                        node_p = 'ne_coreTS'
+                        node_err = 'ne_coreTSerr'
+                elif text == 'ECE':
+                    subtree = 'HRS_EAST'
+                elif text == 'Michelson':
+                    subtree = 'MPI_Analy'
+                elif text == 'TXCS':
+                    subtree = 'TXCS_EAST'
+                    node_r = 'R_TXCS'
+                    node_z = 'Z_TXCS'
+                    if par['Profile'] == 'Te':
+                        node_p = 'Te_TXCS'
+                        node_err = 'Te_TXCSerr'
+                    elif par['Profile'] == 'Ti':
+                        node_p = 'Ti_TXCS'
+                        node_err = 'Ti_TXCSerr'
+                elif text == 'CXRS (Core)':
+                    subtree = 'CXRS_EAST'
+                elif text == 'POINT':
+                    subtree = 'POINT_Analy'
+                node_times = 'dim_of(' + node_p + ')'
+                data_r = 'data(' + node_r + ')'
+                data_z = 'data(' + node_z + ')'
+                data_p = 'data(' + node_p + ')'
+                data_err = 'data(' + node_err + ')'
+                data_ = {'r': data_r, 'z': data_z, 'p': data_p, 'err': data_err}
+                # self.time /= 1000.
+                efit_tree = str(par['Tree'])
+                mdsopen(subtree, self.shot)
 
-                    if self.value['data'].any():
-                        self.value['data'] = np.vstack((self.value['data'], result))
+                result = {}
+                if text == 'Reflectometry':
+                    result, globalvar = self.reflectometry(efit_tree, globalvar)
+                elif text == 'Thomson (Core)':
+                    result, globalvar = self.thomson_core(node_times, data_, efit_tree, par, globalvar)
+                elif text == 'POINT':
+                    result, globalvar = self.point(efit_tree, globalvar)
+                elif text == 'TXCS':
+                    result, globalvar = self.txcs(node_times, data_, efit_tree, par, globalvar)
+                elif text == 'CXRS (Core)':
+                    result, globalvar = self.cxrs(efit_tree, globalvar)
+                elif text == 'ECE':
+                    result, globalvar = self.ece(efit_tree, globalvar)
+                elif text == 'Michelson':
+                    result, globalvar = self.michelson(efit_tree, globalvar)
+                # mdsdisconnect()
+
+                for s in 'rho', 'psi':
+                    if s == 'rho':
+                        _data = 'data_rho'
+                    elif s == 'psi':
+                        _data = 'data_psi'
+                    if globalvar.value[_data].any():
+                        globalvar.value[_data] = np.vstack((globalvar.value[_data], result[_data]))
                     else:
-                        self.value['data'] = result
+                        globalvar.value[_data] = result[_data]
+        return globalvar
 
     # noinspection PyArgumentList
-    def reflectometry(self, shot, time, node_times, data_r, data_p, efit_tree, rhopsi):
-        times = mdsvalue(node_times)
-        ind = np.argmin(abs(times - time))
+    def reflectometry(self, efit_tree, globalvar):
+        times = mdsvalue('dim_of(ne_ReflJ)')
+        ind = np.argmin(abs(times - self.time / 1000.))
         time = times[ind]
         index = '[*,' + str(ind) + ']'
-        ne = mdsvalue(data_p + index)
-        r = mdsvalue(data_r + index)
+        ne = mdsvalue('data(ne_ReflJ)' + index)
+        r = mdsvalue('data(R_ReflJ)' + index)
         not_nan_idx = np.isfinite(ne)
         ne = ne[not_nan_idx]
         r = r[not_nan_idx]
         z = np.ones(len(r)) * 0.03
         rz = np.transpose([r, z])
-        mapping = east_mapping(shot, time, efit_tree, rz)
-        result = np.array([mapping[rhopsi], ne]).T
-        result = result[np.argsort(result, axis=0)][:, 0]
-        self.value['diagnostic1'] = result
-        self.value['time1'] = time
-        DataBase(d1=result)
-        return result
+        if self.fm:
+            efitDir = str(self.efitDir)
+            efitDir = os.path.dirname(efitDir)
+            mapping = east_mapping(self.shot, self.time, efitDir, rz)
+        else:
+            mapping = east_mapping(self.shot, time * 1000, efit_tree, rz)
+        resultRho = np.array([mapping['rho'], ne]).T
+        resultRho = resultRho[np.argsort(resultRho, axis=0)][:, 0]
+        resultPsi = np.array([mapping['psi'], ne]).T
+        resultPsi = resultPsi[np.argsort(resultPsi, axis=0)][:, 0]
+        globalvar.value['diagnostic1_rho'] = resultRho
+        globalvar.value['diagnostic1_psi'] = resultPsi
+        globalvar.value['time1'] = time
+        globalvar.d(d1_rho=resultRho)
+        globalvar.d(d1_psi=resultPsi)
+        return {'data_rho': resultRho, 'data_psi': resultPsi}, globalvar
 
     # noinspection PyArgumentList
-    def thomson_core(self, shot, time, node_times, data_r, data_z, data_p, efit_tree, rhopsi, par):
-        times = mdsvalue(node_times)
+    def thomson_core(self, node_times, data_, efit_tree, par, globalvar):
+        try:
+            times = mdsvalue('dim_of(Te_maxTS)')
+        except RuntimeError:
+            print 'There is NO "Te_maxTS" data!'
+            times = mdsvalue(node_times)
         # time_window = 0.01  # time window for the MR diagnostic
-        ind = np.argmin(abs(times - time))
+        ind = np.argmin(abs(times - self.time / 1000.))
         time = times[ind]
         index = '[*,' + str(ind) + ']'
-        data = mdsvalue(data_p + index)
-        r = mdsvalue(data_r)
+        data = mdsvalue(data_['p'] + index)
+        err = mdsvalue(data_['err'] + index)
         not_nan_idx = np.isfinite(data)
         data = data[not_nan_idx]
-        z = mdsvalue(data_z)
+        err = err[not_nan_idx]
+        r = mdsvalue(data_['r'])
+        z = mdsvalue(data_['z'])
         rz = np.transpose([r, z])
-        mapping = east_mapping(shot, time, efit_tree, rz)
-        result = np.array([mapping[rhopsi], data]).T
-        result = result[np.argsort(result, axis=0)][:, 0]
+        if self.fm:
+            efitDir = str(self.efitDir)
+            efitDir = os.path.dirname(efitDir)
+            mapping = east_mapping(self.shot, self.time, efitDir, rz)
+        else:
+            mapping = east_mapping(self.shot, time * 1000, efit_tree, rz)
+        resultRho = np.array([mapping['rho'], data]).T
+        resultRho = resultRho[np.argsort(resultRho, axis=0)][:, 0]
+        resultPsi = np.array([mapping['psi'], data]).T
+        resultPsi = resultPsi[np.argsort(resultPsi, axis=0)][:, 0]
+        err = err[np.argsort(resultRho, axis=0)][:, 0]
         if par['Profile'] == 'Te':
-            result[:, 1] /= 1000.
-            self.value['diagnostic1'] = result
-            self.value['time1'] = time
-            DataBase(d1=result)
+            resultRho[:, 1] /= 1000.
+            resultPsi[:, 1] /= 1000.
+            err /= 1000.
+            globalvar.value['diagnostic1_rho'] = resultRho
+            globalvar.value['diagnostic1_psi'] = resultPsi
+            globalvar.value['diagnostic1_err'] = err
+            globalvar.value['time1'] = time
+            globalvar.d(d1_rho=resultRho)
+            globalvar.d(d1_psi=resultPsi)
         elif par['Profile'] == 'ne':
-            result[:, 1] /= 1.e19
-            self.value['diagnostic2'] = result
-            self.value['time2'] = time
-            DataBase(d2=result)
-        return result
+            resultRho[:, 1] /= 1.e19
+            resultPsi[:, 1] /= 1.e19
+            err /= 1.e19
+            globalvar.value['diagnostic2_rho'] = resultRho
+            globalvar.value['diagnostic2_psi'] = resultPsi
+            globalvar.value['diagnostic2_err'] = err
+            globalvar.value['time2'] = time
+            globalvar.d(d2_rho=resultRho)
+            globalvar.d(d2_psi=resultPsi)
+        return {'data_rho': resultRho, 'data_psi': resultPsi}, globalvar
 
     # noinspection PyArgumentList
-    def point(self, time):
+    def point(self, efit_tree, globalvar):
         times = mdsvalue('dim_of(\\ne_POINT,0)')
-        ind = np.argmin(abs(times - time))
+        ind = np.argmin(abs(times - self.time / 1000.))
         rho = np.linspace(0, 1, 21)
         ne = mdsvalue('\\ne_POINT')[ind]
-        result = np.array([rho, ne]).T
-        result = result[np.argsort(result, axis=0)][:, 0]
-        self.value['diagnostic4'] = result
-        self.value['time4'] = times[ind]
-        DataBase(d4=result)
-        return result
+        if self.fm:
+            efitDir = str(self.efitDir)
+            efitDir = os.path.dirname(efitDir)
+            mapping = rho2psi(self.shot, self.time, efitDir, rho)
+            resultPsi = np.array([mapping['psi'], ne]).T
+        else:
+            mapping = rho2psi(self.shot, self.time, efit_tree, rho)
+            resultPsi = np.array([mapping['psi'], ne]).T
+        resultRho = np.array([rho, ne]).T
+        resultRho = resultRho[np.argsort(resultRho, axis=0)][:, 0]
+        resultPsi = resultPsi[np.argsort(resultPsi, axis=0)][:, 0]
+        globalvar.value['diagnostic4_rho'] = resultRho
+        globalvar.value['diagnostic4_psi'] = resultPsi
+        globalvar.value['time4'] = times[ind]
+        globalvar.d(d4_rho=resultRho)
+        globalvar.d(d4_psi=resultPsi)
+        return {'data_rho': resultRho, 'data_psi': resultPsi}, globalvar
 
     # noinspection PyArgumentList
-    def txcs(self, shot, time, node_times, data_z, data_p, efit_tree, rhopsi, par):
+    def txcs(self, node_times, data_, efit_tree, par, globalvar):
         times = mdsvalue(node_times)
-        ind = np.argmin(abs(times - time))
-        print ind
-        t_index = np.searchsorted(times, time)
-        print t_index
+        ind = np.argmin(abs(times - self.time / 1000.))
         time = times[ind]
-        print time
-        print times[t_index]
-        data = mdsvalue(data_p)
-        print data
-        print data.shape
-        r = 1.9  # mdsvalue('data(R_TXCS)' )
-        z = mdsvalue(data_z) / 100.
+        data = mdsvalue(data_['p'])
         data = data[:, ind]
-        print data
+        err = mdsvalue(data_['err'])
+        err = err[:, ind]
         not_nan_idx = np.isfinite(data)
-        data = data[not_nan_idx]
-        print data
+        data = data[not_nan_idx] / 1000.
+        err = err[not_nan_idx] / 1000.
+        r = 1.9
+        z = mdsvalue(data_['z']) / 100.
         z = z[not_nan_idx]
         r = np.ones(len(z)) * r
         rz = np.transpose([r, z])
-        mapping = east_mapping(shot, time, efit_tree, rz)
-        result = np.array([mapping[rhopsi], data]).T
-        result = result[np.argsort(result, axis=0)][:, 0]
-        result[:, 1] /= 1000.
+        if self.fm:
+            efitDir = str(self.efitDir)
+            gFilePath = os.path.dirname(efitDir)
+            mapping = east_mapping(self.shot, self.time, gFilePath, rz)
+        else:
+            mapping = east_mapping(self.shot, self.time, efit_tree, rz)
+        print 'mapping:', mapping
+        resultRho = np.array([mapping['rho'], data]).T
+        resultRho = resultRho[np.argsort(resultRho, axis=0)][:, 0]
+        resultPsi = np.array([mapping['psi'], data]).T
+        resultPsi = resultPsi[np.argsort(resultPsi, axis=0)][:, 0]
+        err = err[np.argsort(resultRho, axis=0)][:, 0]
         if par['Profile'] == 'Te':
-            self.value['diagnostic5'] = result
-            self.value['time5'] = time
-            DataBase(d5=result)
+            globalvar.value['diagnostic5_rho'] = resultRho
+            globalvar.value['diagnostic5_psi'] = resultPsi
+            globalvar.value['diagnostic5_err'] = err
+            globalvar.value['time5'] = time
+            globalvar.d(d5_rho=resultRho)
+            globalvar.d(d5_psi=resultPsi)
         elif par['Profile'] == 'Ti':
-            self.value['diagnostic3'] = result
-            self.value['time3'] = time
-            DataBase(d3=result)
-        return result
+            globalvar.value['diagnostic3_rho'] = resultRho
+            globalvar.value['diagnostic3_psi'] = resultPsi
+            globalvar.value['diagnostic3_err'] = err
+            globalvar.value['time3'] = time
+            globalvar.d(d3_rho=resultRho)
+            globalvar.d(d3_psi=resultPsi)
+        return {'data_rho': resultRho, 'data_psi': resultPsi}, globalvar
 
     # noinspection PyArgumentList
-    def cxrs(self, shot, time, node_times, data_r, data_p, efit_tree, rhopsi):
-        times = mdsvalue(node_times)
+    def cxrs(self, efit_tree, globalvar):
+        times = mdsvalue('dim_of(Ti_CXRS_T)')
         # time_window = 0.01  # time window for the MR diagnostic
-        ind = np.argmin(abs(times - time))
+        ind = np.argmin(abs(times - self.time / 1000.))
         time = times[ind]
         index = '[*,' + str(ind) + ']'
-        data = mdsvalue(data_p + index)
-        r = mdsvalue(data_r)
+        data = mdsvalue('data(Ti_CXRS_T)' + index) / 1000.
+        err = mdsvalue('data(Ti_CXRS_Terr)' + index) / 1000.
+        r = mdsvalue('data(R_CXRS_T)')
         not_nan_idx = np.isfinite(data)
         data = data[not_nan_idx]
+        err = err[not_nan_idx]
         z = np.ones(len(r)) * 0.02
         rz = np.transpose([r, z])
-        mapping = east_mapping(shot, time, efit_tree, rz)
-        result = np.array([mapping[rhopsi], data]).T
-        result = result[np.argsort(result, axis=0)][:, 0]
-        result[:, 1] /= 1000.
-        self.value['diagnostic1'] = result
-        self.value['time1'] = time
-        DataBase(d1=result)
-        return result
+        if self.fm:
+            efitDir = str(self.efitDir)
+            efitDir = os.path.dirname(efitDir)
+            mapping = east_mapping(self.shot, self.time, efitDir, rz)
+        else:
+            mapping = east_mapping(self.shot, time * 1000, efit_tree, rz)
+        resultRho = np.array([mapping['rho'], data]).T
+        resultRho = resultRho[np.argsort(resultRho, axis=0)][:, 0]
+        resultPsi = np.array([mapping['psi'], data]).T
+        resultPsi = resultPsi[np.argsort(resultPsi, axis=0)][:, 0]
+        err = err[np.argsort(resultRho, axis=0)][:, 0]
+        globalvar.value['diagnostic1_rho'] = resultRho
+        globalvar.value['diagnostic1_psi'] = resultPsi
+        globalvar.value['diagnostic1_err'] = err
+        globalvar.value['time1'] = time
+        globalvar.d(d1_rho=resultRho)
+        globalvar.d(d1_psi=resultPsi)
+        return {'data_rho': resultRho, 'data_psi': resultPsi}, globalvar
 
     # noinspection PyArgumentList
-    def ece(self, shot, time, node_times, data_r, data_p, efit_tree, rhopsi):
-        times = mdsvalue(node_times)
+    def ece(self, efit_tree, globalvar):
+        times = mdsvalue('dim_of(Te_HRS)')
         # time_window = 0.01  # time window for the MR diagnostic
-        ind = np.argmin(abs(times - time))
+        ind = np.argmin(abs(times - self.time / 1000.))
         time = times[ind]
         index = '[*,' + str(ind) + ']'
-        data = mdsvalue(data_p + index)
-        r = mdsvalue(data_r)
+        data = mdsvalue('data(Te_HRS)' + index) / 1000.
+        err = mdsvalue('data(Te_HRSerr)' + index) / 1000.
+        r = mdsvalue('data(R_HRS)')
         not_nan_idx = np.isfinite(data)
         data = data[not_nan_idx]
+        err = err[not_nan_idx]
         z = np.ones(len(r)) * 0.02
         rz = np.transpose([r, z])
-        mapping = east_mapping(shot, time, efit_tree, rz)
-        result = np.array([mapping[rhopsi], data]).T
-        result = result[np.argsort(result, axis=0)][:, 0]
-        result[:, 1] /= 1000.
-        self.value['diagnostic3'] = result
-        self.value['time3'] = time
-        DataBase(d3=result)
-        return result
+        if self.fm:
+            efitDir = str(self.efitDir)
+            efitDir = os.path.dirname(efitDir)
+            mapping = east_mapping(self.shot, self.time, efitDir, rz)
+        else:
+            mapping = east_mapping(self.shot, time * 1000, efit_tree, rz)
+        resultRho = np.array([mapping['rho'], data]).T
+        resultRho = resultRho[np.argsort(resultRho, axis=0)][:, 0]
+        resultPsi = np.array([mapping['psi'], data]).T
+        resultPsi = resultPsi[np.argsort(resultPsi, axis=0)][:, 0]
+        err = err[np.argsort(resultRho, axis=0)][:, 0]
+        globalvar.value['diagnostic3_rho'] = resultRho
+        globalvar.value['diagnostic3_psi'] = resultPsi
+        globalvar.value['diagnostic3_err'] = err
+        globalvar.value['time3'] = time
+        globalvar.d(d3_rho=resultRho)
+        globalvar.d(d3_psi=resultPsi)
+        return {'data_rho': resultRho, 'data_psi': resultPsi}, globalvar
 
     # noinspection PyArgumentList
-    def michelson(self, shot, time, node_time, data_r, data_p, efit_tree, rhopsi):
-        times = mdsvalue(node_time)
-        ind = np.argmin(abs(times - time))
+    def michelson(self, efit_tree, globalvar):
+        times = mdsvalue('dim_of(Te_MI)')
+        ind = np.argmin(abs(times - self.time / 1000.))
         time = times[ind]
         index = '[*,' + str(ind) + ']'
-        data = mdsvalue(data_p + index)
-        r = mdsvalue(data_r)
+        data = mdsvalue('data(Te_HRS)' + index)
+        err = mdsvalue('data(Te_MISerr)' + index)
         not_nan_idx = np.isfinite(data)
-        data = data[not_nan_idx]
+        data = data[not_nan_idx] / 1000.
+        err = err[not_nan_idx] / 1000.
+        r = mdsvalue('data(R_HRS)')
         z = np.ones(len(r)) * 0.02
         rz = np.transpose([r, z])
-        mapping = east_mapping(shot, time, efit_tree, rz)
-        result = np.array([mapping[rhopsi], data]).T
-        result = result[np.argsort(result, axis=0)][:, 0]
-        result[:, 1] /= 1000.
-        self.value['diagnostic4'] = result
-        self.value['time4'] = time
-        DataBase(d4=result)
-        return result
+        if self.fm:
+            efitDir = str(self.efitDir)
+            efitDir = os.path.dirname(efitDir)
+            mapping = east_mapping(self.shot, self.time, efitDir, rz)
+        else:
+            mapping = east_mapping(self.shot, time * 1000, efit_tree, rz)
+        resultRho = np.array([mapping['rho'], data]).T
+        resultRho = resultRho[np.argsort(resultRho, axis=0)][:, 0]
+        resultPsi = np.array([mapping['psi'], data]).T
+        resultPsi = resultPsi[np.argsort(resultPsi, axis=0)][:, 0]
+        err = err[np.argsort(resultRho, axis=0)][:, 0]
+        globalvar.value['diagnostic4_rho'] = resultRho
+        globalvar.value['diagnostic4_psi'] = resultPsi
+        globalvar.value['diagnostic4_err'] = err
+        globalvar.value['time4'] = time
+        globalvar.d(d4_rho=resultRho)
+        globalvar.d(d4_psi=resultPsi)
+        return {'data_rho': resultRho, 'data_psi': resultPsi}, globalvar
 
-    def __call__(self):
-        return self.value
+    def __call__(self, globalvar):
+        return globalvar.value
