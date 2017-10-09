@@ -6,32 +6,32 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>441</width>
-    <height>596</height>
+    <width>505</width>
+    <height>742</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0">
-    <widget class="QFrame" name="frame">
+  <layout class="QGridLayout" name="gridLayout_4">
+   <item row="2" column="0">
+    <widget class="QFrame" name="frame_6">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout_7">
+     <layout class="QGridLayout" name="gridLayout_9">
       <item row="0" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="label_2">
         <property name="text">
          <string>Select Efit From:</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QRadioButton" name="rbFile">
+       <widget class="QRadioButton" name="rbFile_2">
         <property name="text">
          <string>File</string>
         </property>
@@ -41,7 +41,7 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QRadioButton" name="rbMdsPlus">
+       <widget class="QRadioButton" name="rbMdsPlus_2">
         <property name="text">
          <string>MDS+ Server</string>
         </property>
@@ -50,48 +50,40 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QFrame" name="frame_2">
+   <item row="3" column="0">
+    <widget class="QFrame" name="frame_5">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0" rowspan="2">
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <widget class="QRadioButton" name="rbRZMap">
-          <property name="text">
-           <string>RZ Map</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="rbRhoMap">
-          <property name="text">
-           <string>Rho Map</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="rbPsiMap">
-          <property name="text">
-           <string>Psi Map</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="0" column="1" rowspan="2">
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
+      <property name="margin">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
        <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="leftMargin">
+         <number>9</number>
+        </property>
+        <property name="rightMargin">
+         <number>9</number>
+        </property>
         <item>
          <widget class="QLabel" name="lGFileDir">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>68</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
            <string>GFile Dir:</string>
           </property>
@@ -107,32 +99,7 @@
         <item>
          <widget class="QToolButton" name="tbGFileDir">
           <property name="text">
-           <string>...</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="1" column="2">
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
-         <widget class="QLabel" name="lDataDir">
-          <property name="text">
-           <string>Data  Dir:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="leDataDir">
-          <property name="dragEnabled">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="tbData">
-          <property name="text">
-           <string>...</string>
+           <string>Open</string>
           </property>
          </widget>
         </item>
@@ -141,13 +108,13 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="4" column="0">
     <widget class="QFrame" name="frame_4">
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::Panel</enum>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
+      <enum>QFrame::Sunken</enum>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
@@ -238,7 +205,7 @@
            <enum>QFrame::Raised</enum>
           </property>
           <property name="text">
-           <string>Time</string>
+           <string>Time (ms)</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -282,7 +249,136 @@
      </layout>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="5" column="0">
+    <widget class="QFrame" name="frame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_7">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Select Data From:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QRadioButton" name="rbFile">
+        <property name="text">
+         <string>File</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QRadioButton" name="rbMdsPlus">
+        <property name="text">
+         <string>MDS+ Server</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QFrame" name="frame_2">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <property name="margin">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <property name="leftMargin">
+         <number>9</number>
+        </property>
+        <property name="rightMargin">
+         <number>9</number>
+        </property>
+        <item>
+         <widget class="QRadioButton" name="rbRZMap">
+          <property name="text">
+           <string>RZ Map</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rbRhoMap">
+          <property name="text">
+           <string>Rho Map</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rbPsiMap">
+          <property name="text">
+           <string>Psi Map</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="1" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <property name="leftMargin">
+         <number>9</number>
+        </property>
+        <property name="rightMargin">
+         <number>9</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="lDataDir">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Data  Dir:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="leDataDir">
+          <property name="dragEnabled">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="tbData">
+          <property name="text">
+           <string>Open</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pbTemplates">
+          <property name="maximumSize">
+           <size>
+            <width>77</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Templates</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="8" column="0">
     <widget class="QFrame" name="frame_3">
      <layout class="QGridLayout" name="gridLayout_5">
       <item row="2" column="0">
@@ -318,7 +414,7 @@
      </layout>
     </widget>
    </item>
-   <item row="4" column="0">
+   <item row="9" column="0">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -326,7 +422,7 @@
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>85</height>
+       <height>186</height>
       </size>
      </property>
     </spacer>
@@ -341,166 +437,5 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>rbFile</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>frame_2</receiver>
-   <slot>show()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>169</x>
-     <y>28</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>169</x>
-     <y>60</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rbFile</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>frame_4</receiver>
-   <slot>hide()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>191</x>
-     <y>31</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>191</x>
-     <y>166</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rbFile</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>frame_3</receiver>
-   <slot>hide()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>220</x>
-     <y>32</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>209</x>
-     <y>405</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rbMdsPlus</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>frame_2</receiver>
-   <slot>hide()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>32</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>312</x>
-     <y>60</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rbMdsPlus</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>frame_4</receiver>
-   <slot>show()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>340</x>
-     <y>31</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>342</x>
-     <y>164</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rbMdsPlus</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>frame_3</receiver>
-   <slot>show()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>374</x>
-     <y>31</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>376</x>
-     <y>400</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rbRhoMap</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>leGFileDir</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>61</x>
-     <y>111</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>267</x>
-     <y>84</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rbRhoMap</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>tbGFileDir</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>81</x>
-     <y>105</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>409</x>
-     <y>83</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rbPsiMap</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>leGFileDir</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>51</x>
-     <y>132</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>228</x>
-     <y>89</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>rbPsiMap</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>tbGFileDir</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>102</x>
-     <y>128</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>403</x>
-     <y>86</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

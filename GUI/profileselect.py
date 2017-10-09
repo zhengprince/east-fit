@@ -1,15 +1,17 @@
 # -*- coding:utf-8 -*-
 
+import sys, time
+from pmds import mdsconnect, mdsopen, mdsvalue, mdsdisconnect
+
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
 
 from MainWindow import MainWindow
 from Ui_profileselect import Ui_ProfileSelect
-import sys
 
 
 class Panel(QtGui.QWidget, Ui_ProfileSelect):
-    def __init__(self, parent=None):
+    def __init__(self, connected=False, parent=None):
 
         QtGui.QWidget.__init__(self, parent)
         self.setupUi(self)
@@ -24,7 +26,7 @@ class Panel(QtGui.QWidget, Ui_ProfileSelect):
 
         # 添加最小化按钮
         qbtn_minus = QtGui.QPushButton(self)
-        qbtn_minus.setGeometry(115, 0, 30, 30)
+        qbtn_minus.setGeometry(114, 0, 30, 30)
         qbtn_minus.setObjectName(u'qbtn_minus')
 
         # 添加关闭按钮
@@ -68,6 +70,8 @@ class Panel(QtGui.QWidget, Ui_ProfileSelect):
         qbtn_minus.clicked.connect(self.showMinimized)
         qbtn_close.clicked.connect(sys.exit)
 
+        self.connected = connected
+
     # 支持窗口拖动,重写两个方法
     def mousePressEvent(self, event):
         if event.button() and Qt.LeftButton:
@@ -87,22 +91,70 @@ class Panel(QtGui.QWidget, Ui_ProfileSelect):
     def on_bElectronTemperature_clicked(self):
         win = MainWindow(parent=self, profile='Te')
         win.show()
+        # self.statusBarP(win)
 
     @QtCore.pyqtSignature("")
     def on_bIonTemperature_clicked(self):
         win = MainWindow(parent=self, profile='Ti')
         win.show()
+        # self.statusBarP(win)
 
     @QtCore.pyqtSignature("")
     def on_bElectronDensity_clicked(self):
         win = MainWindow(parent=self, profile='ne')
         win.show()
+        # self.statusBarP(win)
 
+    def receiveSig(self, connected):
+        if connected:
+            self.connected = True
+        else:
+            self.connected = False
+
+    def statusBarP(self, win):
+        if self.connected:
+            win.statusBar.showMessage('MDS+ SERVER CONNECTED!')
+        else:
+            win.statusBar.showMessage('CANNOT CONNECT THE MDS+ SERVER!')
+            win.tab1.rbMdsPlus.setDisabled(True)
+            win.tab1.rbMdsPlus_2.setDisabled(True)
+
+
+class ConnectMDS(QtCore.QThread):
+    trigger = QtCore.pyqtSignal(bool)
+
+    def __init__(self, parent=None):
+        super(ConnectMDS, self).__init__(parent)
+
+    def run(self):
+        try:
+            mdsconnect('mds.ipp.ac.cn')
+            connected = True
+        except Exception, e:
+            print Exception, ":", e
+            connected = False
+        self.trigger.emit(connected)
+#
+#
+# class SlaveWindow(QtGui.QWidget):
+#     def __init__(self, parent=None):
+#         super(SlaveWindow, self).__init__(parent)
+#         top = QtGui.QWidget(self)
+#         layout = QtGui.QVBoxLayout(top)  # 垂直布局类QVBoxLayout；
+#         self.lcdNumber = QtGui.QLCDNumber()  # 加个显示屏
+#         layout.addWidget(self.lcdNumber)
+#         # button = QtGui.QPushButton(u"测试")
+#         # layout.addWidget(button)
+#     @QtCore.pyqtSlot(int)
+#     def up(self, v):
+#         self.lcdNumber.display(v)
 
 # if __name__ == "__main__":
 def run():
-
     app = QtGui.QApplication(sys.argv)
     mw = Panel()
     mw.show()
+    # cm = ConnectMDS()
+    # cm.trigger.connect(mw.receiveSig)
+    # cm.start()
     sys.exit(app.exec_())
