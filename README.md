@@ -1,2 +1,2 @@
-# east-fit
-east fit is a equilibrium fitting tool for EAST.
+# EAST-fit
+EAST-fit is a equilibrium fitting tool for EAST.
