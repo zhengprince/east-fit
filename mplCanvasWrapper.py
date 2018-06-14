@@ -114,6 +114,8 @@ class MplCanvas(FigureCanvas):
             self.ax.set_ylabel(r'$T_i (keV)$', fontsize=16, family='Arial')
         elif par['Profile'] == 'ne':
             self.ax.set_ylabel(r'$n_e (10^{19}m^{-3})$', fontsize=16, family='Arial')
+        elif par['Profile'] == 'Vt':
+            self.ax.set_ylabel(r'$V_t (10^{4}m/s)$', fontsize=16, family='Arial')
 
         # draw the title
         # print 'title'
@@ -251,7 +253,7 @@ class MplCanvas(FigureCanvas):
                     self.ax.lines.remove(self.ls[i])
                 self.ls = np.array([], dtype=object)
             for i in range(len(pos)):
-                l, = self.ax.plot(pos[i], 0, 'Dr', ms=4, fillstyle='None', alpha=0.4)
+                l, = self.ax.plot(pos[i], 0, 'Dr', ms=4, fillstyle='none', alpha=0.4)
                 self.ls = np.insert(self.ls, i, l)
         else:
             if self.ls.size:
@@ -470,6 +472,14 @@ class MplCanvasWrapper(QtGui.QWidget):
 
 
 def fit(processed_data, par, params):
+    """
+    fit data with fit function
+    :param processed_data:
+    :param par:
+    :param params:
+    :return: datafit, params
+    """
+    # Choose grid sizes
     if par['FittingRange'] == 1.0:
         grid = par['GridSize']
     elif par['FittingRange'] == 1.1:
@@ -498,9 +508,9 @@ def fit(processed_data, par, params):
         datafit = processed_data.spline(s=20, knots=knots)
     else:
         datafit = processed_data.fit(func, c, epsfcn=1.e-8, use_odr=1, ifixb=iFix, param=0.)
-    print '1111', rho, datafit
+    # print '1111', rho, datafit
     datafit = datafit.newx(rho)
-    print '2222', datafit
+    # print '2222', datafit
     return datafit, params
 
 
@@ -565,6 +575,8 @@ def get_label(par):
             label[0] = 'CXRS (Core)'
         elif par['Profile'] == 'ne':
             label[0] = 'Reflectometry'
+        elif par['Profile'] == 'Vt':
+            label[0] = 'CXRS (Core)'
 
     # diagnostic 2
     if par['Diag2']:
@@ -574,6 +586,8 @@ def get_label(par):
             label[1] = 'CXRS (Edge)'
         elif par['Profile'] == 'ne':
             label[1] = 'Thomson (Core)'
+        elif par['Profile'] == 'Vt':
+            label[0] = 'TXCS'
 
     # diagnostic 3
     if par['Diag3']:
@@ -615,6 +629,8 @@ def get_title(g, par):
             title += 'CXRS'
         elif par['Profile'] == 'ne':
             title += 'Reflectometry'
+        elif par['Profile'] == 'Vt':
+            title += 'CXRS'
         title += ' ' + str(round(g.value['time1'] * 1000, 3)) + 'ms' + ' + '
 
     # diagnostic 2
@@ -625,6 +641,8 @@ def get_title(g, par):
             title += None
         elif par['Profile'] == 'ne':
             title += 'Thomson'
+        elif par['Profile'] == 'Vt':
+            title += 'TXCS'
         title += ' ' + str(round(g.value['time2'] * 1000, 3)) + 'ms' + ' + '
 
     # diagnostic 3

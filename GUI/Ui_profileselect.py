@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'profileselectwidget.ui'
+# Form implementation generated from reading ui file 'profileselect.ui'
 #
-# Created: Mon Apr 11 20:11:50 2016
-#      by: PyQt4 UI code generator 4.9.5
+# Created: Fri Oct 27 01:34:01 2017
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,12 +12,21 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
 
-class Ui_ProfileSelect(object):
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
+
+class Ui_ProfileSelectWidget(object):
     def setupUi(self, ProfileSelectWidget):
         ProfileSelectWidget.setObjectName(_fromUtf8("ProfileSelectWidget"))
-        ProfileSelectWidget.resize(197, 546)
+        ProfileSelectWidget.resize(173, 546)
         self.gridLayout = QtGui.QGridLayout(ProfileSelectWidget)
         self.gridLayout.setMargin(0)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
@@ -54,24 +63,30 @@ class Ui_ProfileSelect(object):
         self.bElectronTemperature = QtGui.QPushButton(self.frame)
         self.bElectronTemperature.setObjectName(_fromUtf8("bElectronTemperature"))
         self.gridLayout_2.addWidget(self.bElectronTemperature, 0, 0, 1, 1)
+        self.bRotationVelocity = QtGui.QPushButton(self.frame)
+        self.bRotationVelocity.setObjectName(_fromUtf8("bRotationVelocity"))
+        self.gridLayout_2.addWidget(self.bRotationVelocity, 4, 0, 1, 1)
         self.gridLayout_3.addWidget(self.frame, 3, 0, 1, 1)
-        spacerItem2 = QtGui.QSpacerItem(17, 80, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.gridLayout_3.addItem(spacerItem2, 4, 0, 1, 1)
-        spacerItem3 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.gridLayout_3.addItem(spacerItem3, 5, 0, 1, 1)
-        spacerItem4 = QtGui.QSpacerItem(20, 57, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.gridLayout_3.addItem(spacerItem4, 6, 0, 1, 1)
+        spacerItem2 = QtGui.QSpacerItem(20, 57, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.gridLayout_3.addItem(spacerItem2, 8, 0, 1, 1)
+        spacerItem3 = QtGui.QSpacerItem(17, 80, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.gridLayout_3.addItem(spacerItem3, 4, 0, 1, 1)
         self.gridLayout.addWidget(self.frame_2, 0, 0, 1, 1)
 
         self.retranslateUi(ProfileSelectWidget)
         QtCore.QMetaObject.connectSlotsByName(ProfileSelectWidget)
 
     def retranslateUi(self, ProfileSelectWidget):
-        ProfileSelectWidget.setWindowTitle(QtGui.QApplication.translate("ProfileSelectWidget", "Select Profile", None, QtGui.QApplication.UnicodeUTF8))
-        self.lSelectProfile.setText(QtGui.QApplication.translate("ProfileSelectWidget", "Select a Profile to Fit", None, QtGui.QApplication.UnicodeUTF8))
-        self.bIonTemperature.setText(QtGui.QApplication.translate("ProfileSelectWidget", "Ion Temperature", None, QtGui.QApplication.UnicodeUTF8))
-        self.bElectronDensity.setText(QtGui.QApplication.translate("ProfileSelectWidget", "Electron Density", None, QtGui.QApplication.UnicodeUTF8))
-        self.bElectronTemperature.setText(QtGui.QApplication.translate("ProfileSelectWidget", "Electron Temperature", None, QtGui.QApplication.UnicodeUTF8))
+        ProfileSelectWidget.setWindowTitle(_translate("ProfileSelectWidget", "Select Profile", None))
+        self.lSelectProfile.setText(_translate("ProfileSelectWidget", "Select a Profile to Fit", None))
+        self.bIonTemperature.setToolTip(_translate("ProfileSelectWidget", "Unit: keV", None))
+        self.bIonTemperature.setText(_translate("ProfileSelectWidget", "Ion Temperature", None))
+        self.bElectronDensity.setToolTip(_translate("ProfileSelectWidget", "Unit: 10^{19}m^{-3}", None))
+        self.bElectronDensity.setText(_translate("ProfileSelectWidget", "Electron Density", None))
+        self.bElectronTemperature.setToolTip(_translate("ProfileSelectWidget", "Unit: keV", None))
+        self.bElectronTemperature.setText(_translate("ProfileSelectWidget", "Electron Temperature", None))
+        self.bRotationVelocity.setToolTip(_translate("ProfileSelectWidget", "Unit: km/s", None))
+        self.bRotationVelocity.setText(_translate("ProfileSelectWidget", "Rotation Velocity", None))
 
 import res_rc
 
@@ -79,7 +94,7 @@ if __name__ == "__main__":
     import sys
     app = QtGui.QApplication(sys.argv)
     ProfileSelectWidget = QtGui.QWidget()
-    ui = Ui_ProfileSelect()
+    ui = Ui_ProfileSelectWidget()
     ui.setupUi(ProfileSelectWidget)
     ProfileSelectWidget.show()
     sys.exit(app.exec_())

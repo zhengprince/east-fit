@@ -7,10 +7,10 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
 
 from MainWindow import MainWindow
-from Ui_profileselect import Ui_ProfileSelect
+from Ui_profileselect import Ui_ProfileSelectWidget
 
 
-class Panel(QtGui.QWidget, Ui_ProfileSelect):
+class Panel(QtGui.QWidget, Ui_ProfileSelectWidget):
     def __init__(self, connected=False, parent=None):
 
         QtGui.QWidget.__init__(self, parent)
@@ -102,6 +102,12 @@ class Panel(QtGui.QWidget, Ui_ProfileSelect):
     @QtCore.pyqtSignature("")
     def on_bElectronDensity_clicked(self):
         win = MainWindow(parent=self, profile='ne')
+        win.show()
+        # self.statusBarP(win)
+
+    @QtCore.pyqtSignature("")
+    def on_bRotationVelocity_clicked(self):
+        win = MainWindow(parent=self, profile='Vt')
         win.show()
         # self.statusBarP(win)
 
