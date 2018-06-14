@@ -6,6 +6,7 @@ from GUI.Ui_MainWindow import Ui_MainWindow
 from GUI.Ui_selectefitne import Ui_SelectEfitNe
 from GUI.Ui_selectefitte import Ui_SelectEfitTe
 from GUI.Ui_selectefitti import Ui_SelectEfitTi
+from GUI.Ui_selectefitvt import Ui_SelectEfitVt
 from GUI.setting import Setting
 from GUI.dialog6 import Dialog6
 from GUI.dialog9 import Dialog9
@@ -34,6 +35,8 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.setWindowTitle("Ion Temperature Profiles")
         elif profile == 'ne':
             self.setWindowTitle("Electron Density Profiles")
+        elif profile == 'Vt':
+            self.setWindowTitle("Rotation Velocity Profiles")
 
         # set style sheet with qss file
         # self.qss = QtCore.QFile('./GUI/qss/qss')
@@ -45,9 +48,8 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         # self.setStyleSheet(self.qssStyle)
 
         # define dictionary param: par
-        self.par = dict(EfitDir=os.environ.get('HOME'),
-                        FileName=os.environ.get('HOME'),
-                        RhoPsi='rho',
+        self.par = dict(EfitDir='',
+                        FileName='',
                         Toggle='rho',
                         Time=3000,
                         Shot=100000,
@@ -84,6 +86,9 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.tab1 = Ui_SelectEfitTi()
         elif profile == 'ne':
             self.tab1 = Ui_SelectEfitNe()
+        elif profile == 'Vt':
+            self.tab1 = Ui_SelectEfitVt()
+
         w1 = QtGui.QWidget()
         self.tab1.setupUi(w1)
         self.tabWidget.insertTab(0, w1, "select efit")
@@ -241,6 +246,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.plot()
         except (IndexError, AttributeError), e:
             print "Warning:", e
+            self.statusBar.showMessage('Warning:' + e)
         self.mplCanvas.canvas.plot_knots([0, 0.5, 0.9, 0.95, 1], self.par['vis'])
 
     @QtCore.pyqtSignature("int")
@@ -273,11 +279,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 self.plot()
         except (IOError, IndexError, RuntimeError, AttributeError), e:
             print e
-
-    @QtCore.pyqtSignature("QString")
-    def on_cRhoPsi_activated(self):
-        self.par['RhoPsi'] = self.cRhoPsi.currentText()
-        self.bSave.setText("Save as " + self.par['RhoPsi'])
 
     def on_leGFileDir_textChanged(self):
         self.par['EfitDir'] = self.tab1.leGFileDir.text()
@@ -325,40 +326,45 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
                     self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics1.text(),
                                                                 file_mds=True)
                 self.plot_data(par_tmp)
-            # if self.par['Diag2']:
-            #     if self.tab1.rbMdsPlus_2.isChecked():
-            #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics2.text())
-            #     elif self.tab1.rbFile_2.isChecked():
-            #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics2.text(),
-            #                                                     file_mds=True)
-            #     self.plot_data(par_tmp)
-            # if self.par['Diag3']:
-            #     if self.tab1.rbMdsPlus_2.isChecked():
-            #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics3.text())
-            #     elif self.tab1.rbFile_2.isChecked():
-            #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics3.text(),
-            #                                                     file_mds=True)
-            #     self.plot_data(par_tmp)
-            # if self.par['Diag4']:
-            #     if self.tab1.rbMdsPlus_2.isChecked():
-            #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics4.text())
-            #     elif self.tab1.rbFile_2.isChecked():
-            #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics4.text(),
-            #                                                     file_mds=True)
-            #     self.plot_data(par_tmp)
-            # if self.par['Diag5']:
-            #     if self.tab1.rbMdsPlus_2.isChecked():
-            #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics5.text())
-            #     elif self.tab1.rbFile_2.isChecked():
-            #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics5.text(),
-            #                                                     file_mds=True)
-            #     self.plot_data(par_tmp)
+                # if self.par['Diag2']:
+                #     if self.tab1.rbMdsPlus_2.isChecked():
+                #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics2.text())
+                #     elif self.tab1.rbFile_2.isChecked():
+                #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics2.text(),
+                #                                                     file_mds=True)
+                #     self.plot_data(par_tmp)
+                # if self.par['Diag3']:
+                #     if self.tab1.rbMdsPlus_2.isChecked():
+                #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics3.text())
+                #     elif self.tab1.rbFile_2.isChecked():
+                #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics3.text(),
+                #                                                     file_mds=True)
+                #     self.plot_data(par_tmp)
+                # if self.par['Diag4']:
+                #     if self.tab1.rbMdsPlus_2.isChecked():
+                #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics4.text())
+                #     elif self.tab1.rbFile_2.isChecked():
+                #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics4.text(),
+                #                                                     file_mds=True)
+                #     self.plot_data(par_tmp)
+                # if self.par['Diag5']:
+                #     if self.tab1.rbMdsPlus_2.isChecked():
+                #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics5.text())
+                #     elif self.tab1.rbFile_2.isChecked():
+                #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics5.text(),
+                #                                                     file_mds=True)
+                #     self.plot_data(par_tmp)
 
     def on_tbGFileDir_clicked(self):
         dlg = QtGui.QFileDialog(self)
+        if self.par['EfitDir']:
+            _path = os.path.dirname(str(self.par['EfitDir']))
+        else:
+            _path = os.path.abspath('.')
+        print '_path=', _path
         self.par['EfitDir'] = dlg.getOpenFileName(self,
                                                   u"Choose the GFile",
-                                                  os.environ.get('HOME'))
+                                                  _path)
         if not self.par['EfitDir']:
             return
         if not self.par['EfitDir'].isEmpty():
@@ -381,9 +387,14 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.g.value['data_psi'] = []
         self.g.value['processed_data_psi'] = None
         dlg = QtGui.QFileDialog(self)
+        if self.par['EfitDir']:
+            _path = os.path.dirname(str(self.par['EfitDir']))
+        else:
+            _path = os.path.abspath('.')
+        print '_path=', _path
         self.par['FileName'] = dlg.getOpenFileName(self,
                                                    u"Choose a Data File to Fit",
-                                                   self.par['EfitDir'],
+                                                   _path,
                                                    "All Files (*);;Text Files (*.txt)")
         if not self.par['FileName']:
             return
@@ -398,6 +409,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             try:
                 self.judge_n_obtain_data()
                 self.plot_data(self.par)
+                self.statusBar.showMessage('DATA IMPORTED SUCCESSFULLY !')
             except IOError, e:
                 print e
 
@@ -472,32 +484,36 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
     @QtCore.pyqtSignature("")
     def on_bSave_clicked(self):
         dlg = QtGui.QFileDialog(self)
+        _name = './' + self.par['Profile'] + str(self.par['Shot']).zfill(5) + '.' + str(self.par['Time']).zfill(
+            6) + '.fit'
         saveName = dlg.getSaveFileName(self,
                                        u"Save The Fitted Data",
-                                       self.par['EfitDir'])
+                                       os.path.abspath(_name),
+                                       "Fit Files (*.fit);;All Files (*)")
+        if not saveName:
+            return
         if self.par['Func'] == 'tanh_multi':
             value = self.g9.value['Params']
         elif self.par['Func'] == 'tanh_0out':
             value = self.g6.value['Params']
         elif self.par['Func'] == 'spline':
             value = self.g5.value['Params']
-        if self.par['RhoPsi'] == 'rho':
-            processed_data = self.g.value['processed_data_rho']
-            if self.g.library['data_rho'].any():
-                print 'any'
-                libraryData = self.g.library['data_rho']
-            else:
-                print 'none'
-                libraryData = None
-        elif self.par['RhoPsi'] == 'psi':
-            processed_data = self.g.value['processed_data_psi']
-            if self.g.library['data_psi'].any():
-                print 'any'
-                libraryData = self.g.library['data_psi']
-            else:
-                print 'none'
-                libraryData = None
-        saveFile(saveName, value, processed_data, self.g.value['fit'], libraryData, self.par)
+        fit = self.g.value['fit']
+        par = self.par
+        processed_data = self.g.value
+        database = self.g.database
+        if self.g.library['data_rho'].any() and self.g.library['data_psi'].any():
+            libraryData = self.g.library
+        else:
+            print 'none'
+            libraryData = None
+        # if not self.g.library['data_rho'].any() and not self.g.library['data_psi'].any():
+        #     self.statusBar.showMessage('NO DATA ! NO FILE SAVED !')
+        try:
+            saveFile(saveName, value, processed_data, fit, libraryData, database, par)
+            self.statusBar.showMessage('FILE SAVED SUCCESSFULLY!')
+        except:
+            self.statusBar.showMessage('FILE SAVED UNSUCCESSFULLY!')
 
     @QtCore.pyqtSignature("")
     def on_bManFit_clicked(self):
@@ -654,34 +670,36 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.mplCanvas.canvas.plot_knots(k, True)
 
     def about(self):
+        """
+        Some help information in "About"
+        :return: none
+        """
         msg = QtGui.QMessageBox(self)
         msg.about(self,
                   "About",
                   '<html>'
                   '<body>'
-                  '<h3 style="text-align:center;"><b>EAST-fit</b></h3>'
-                  '<h3 style="text-align:center;"><b>A Profile Fitting Tool for EAST</b></h3>'
+                  '<p><font size="18" face="Lucida Grande"><b>EAST fit</b></font></p>'
+                  '<p><font size="5" face="Lucida Grande"><b>A Profile Fitting Tool for EAST</b></font></p>'
+                  '<p><font face="Lucida Grande">v0.3.5b</font></p>'
                   '<hr>'
-                  '<p>If you have any questions or advices,</p>'
-                  '<p>please contact with:</p>'
-                  '<p align="center">'
+                  '<p><font face="Lucida Grande">If you have any questions or advices,</font></p>'
+                  '<p><font face="Lucida Grande">please contact with:</font></p>'
+                  '<p align="center"><font face="Lucida Grande">'
                   'zhengzhen:'
                   '<a href="mailto:zhengzhen@ipp.ac.cn?Subject=About%20The%20Fitting%20Tool" target="_top">'
                   'zhengzhen@ipp.ac.cn</a>'
-                  '</p>'
+                  '</font></p>'
                   '</body>'
                   '</html>')
 
     def on_bUpdate_clicked(self):
+        # when bUpdate button clicked, initialize list box and diagnostics, then try mdsopen, if success, it will
+        # be shown in the list box, and the shot number will be shown in lShowShot.
         self.initial_list('both')
         self.initial_diagnostics()
         shot = self.tab1.spbShot.value()
         self.par['Shot'] = shot
-        # try:
-        #     mdsconnect('202.127.204.12')
-        # except RuntimeError, e:
-        #     print e
-        #     sys.exit(0)
         for i in ['efit_east', 'efitrt_east', 'pefitrt_east']:
             try:
                 mdsopen(i, shot)
@@ -714,9 +732,12 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             # mdsconnect('mds.ipp.ac.cn')
             self.chk_wh_dia_wk()
 
-    # check which diagnostics work
     # noinspection PyArgumentList
     def chk_wh_dia_wk(self):
+        """
+        check which diagnostics work
+        :return: none
+        """
         if self.par['Profile'] == 'Te':
             # Thomson_core
             try:
@@ -772,7 +793,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             # TXCS
             try:
                 mdsopen('TXCS_EAST', self.par['Shot'])
-                print mdsvalue('dim_of(Te_TXCS)')
+                print mdsvalue('dim_of(Ti_TXCS)')
             except RuntimeError, e:
                 print e
                 print 'Ti_TXCS data:\t .... .... .... N/A'
@@ -810,6 +831,28 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             else:
                 self.tab1.diagnostics4.setDisabled(False)
                 print 'ne_POINT data:\t .... .... .... OK'
+
+        elif self.par['Profile'] == 'Vt':
+            # CXRS
+            try:
+                mdsopen('CXRS_EAST', self.par['Shot'])
+                mdsvalue('dim_of(Vt_CXRS_T)')
+            except RuntimeError:
+                print 'Vt_CXRS_T data:\t .... .... .... N/A'
+            else:
+                self.tab1.diagnostics1.setDisabled(False)
+                print 'Tt_CXRS_T data:\t .... .... .... OK'
+
+            # TXCS
+            try:
+                mdsopen('TXCS_EAST', self.par['Shot'])
+                print mdsvalue('dim_of(Vt_TXCS)')
+            except RuntimeError, e:
+                print e
+                print 'Vt_TXCS data:\t .... .... .... N/A'
+            else:
+                self.tab1.diagnostics2.setDisabled(False)
+                print 'Vt_TXCS data:\t .... .... .... OK'
                 # mdsdisconnect()
 
     def initial_diagnostics(self):
@@ -824,6 +867,10 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 i.setDisabled(True)
         elif self.par['Profile'] == 'ne':
             for i in [self.tab1.diagnostics1, self.tab1.diagnostics2, self.tab1.diagnostics3, self.tab1.diagnostics4]:
+                i.setCheckState(0)
+                i.setDisabled(True)
+        elif self.par['Profile'] == 'Vt':
+            for i in [self.tab1.diagnostics1, self.tab1.diagnostics2]:
                 i.setCheckState(0)
                 i.setDisabled(True)
 
@@ -881,9 +928,9 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.g.library['processed_psi'] = Data()
 
     def mds(self):
+        self.statusBar.showMessage('CONNECTING THE MDS+ SERVER...')
         try:
-            self.statusBar.showMessage('CONNECTING THE MDS+ SERVER...')
-            mdsconnect('mds.ipp.ac.cn')
+            mdsconnect('202.127.204.12')
             self.statusBar.showMessage('MDS+ SERVER CONNECTED!')
         except Exception, e:
             print Exception, ":", e
@@ -919,11 +966,12 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         dlg.show()
 
     def on_actionRestore_clicked(self):
+        """restore the fit file to plot"""
         dlg = QtGui.QFileDialog(self)
         fileName = dlg.getOpenFileName(self,
                                        u"Choose a File to Restore",
-                                       os.environ.get('HOME'),
-                                       "All Files (*);;Text Files (*.txt)")
+                                       os.path.abspath('.'),
+                                       "Fit Files (*.fit);;All Files (*)")
         if not fileName:
             return
         if self.par['Func'] == 'tanh_multi':
@@ -969,6 +1017,8 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             self.cbFunctionSelect.setCurrentIndex(1)
         elif self.par['Func'] == 'spline':
             self.cbFunctionSelect.setCurrentIndex(2)
+        print self.g.value
+        print self.g.library
         self.plot_data(self.par)
         self.plot()
         if self.par['Func'] == 'spline':

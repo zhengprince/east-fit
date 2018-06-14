@@ -318,6 +318,11 @@
                    <height>16777215</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>AquaBase</family>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>rePlot</string>
                  </property>
@@ -368,12 +373,12 @@
                  </property>
                  <item>
                   <property name="text">
-                   <string>rho</string>
+                   <string>  rho</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>psi</string>
+                   <string>  psi</string>
                   </property>
                  </item>
                 </widget>
@@ -389,51 +394,43 @@
                 <number>0</number>
                </property>
                <item row="0" column="0">
-                <widget class="QPushButton" name="bSave">
-                 <property name="minimumSize">
+                <spacer name="horizontalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
                   <size>
-                   <width>100</width>
-                   <height>0</height>
+                   <width>60</width>
+                   <height>20</height>
                   </size>
                  </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>92</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>Save as rho</string>
-                 </property>
-                </widget>
+                </spacer>
                </item>
                <item row="0" column="1">
-                <widget class="QComboBox" name="cRhoPsi">
+                <widget class="QPushButton" name="bSave">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
                  <property name="maximumSize">
                   <size>
-                   <width>26</width>
+                   <width>66</width>
                    <height>16777215</height>
                   </size>
                  </property>
-                 <property name="sizeAdjustPolicy">
-                  <enum>QComboBox::AdjustToMinimumContentsLengthWithIcon</enum>
+                 <property name="font">
+                  <font>
+                   <family>AquaBase</family>
+                  </font>
                  </property>
-                 <item>
-                  <property name="text">
-                   <string>rho</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>psi</string>
-                  </property>
-                 </item>
+                 <property name="text">
+                  <string>Save</string>
+                 </property>
                 </widget>
                </item>
               </layout>

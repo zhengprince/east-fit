@@ -26,118 +26,126 @@ def openFile(filename):
     return {'rz': importData[:, 0:i], 'data': importData[:, i], 'all': importData}
 
 
-def saveFile(save_name, value, data, datafit, library, par):
+def saveFile(save_name, value, data, datafit, library, database, par):
     if not save_name.isEmpty():
         output = open(save_name, 'w')
 
     # &namelist is a file format that can be read by OMFIT and etc.
 
     # write params
-    print >> output, "# " + str(par['Shot']) + "\t" + str(par['Time']) + " ms\t" + str(par['RhoPsi'])\
-                     + '\t' + par['Func'] + "\n"
-    print >> output, "&params\n"
+    output.write('# ' + str(par['Shot']) + '\t' + str(par['Time']) + ' ms\t' + par['Func'] + '\n')
+    output.write('\n&params\n')
     if len(value):
         try:
-            # print >> output, " function ="
-            # print >> output, "  " + par['Func'] + "\n"
-            print >> output, " c ="
+            output.write('c =\n')
             if par['Func'] == 'tanh_multi':
-                c = str(value[0][:])
+                c = value[0][:]
             elif par['Func'] == 'tanh_0out':
-                c = str(value[0][:])
+                c = value[0][:]
             elif par['Func'] == 'spline':
-                c = str(value)
-            c = c.replace("[", "")
-            c = c.replace("]", "") + "\n"
-            print >> output, "  " + c
+                c = value
+            for l in c:
+                output.write('%s ' % l)
             if not par['Func'] == 'spline':
-                output.write(" ifix =\n")
+                output.write('\nifix =\n')
                 if par['Func'] == 'tanh_multi':
-                    iFix = str([i / 2 for i in value[-1]])
+                    iFix = [i / 2 for i in value[-1]]
                 elif par['Func'] == 'tanh_0out':
-                    iFix = str([i / 2 for i in value[-1]])
-                iFix = iFix.replace("[", "")
-                iFix = iFix.replace("]", "") + "\n"
-                print >> output, "  " + iFix + "\n"
-            output.write(" stretch =\n")
-            stretch = str(par['Stretch'])
-            print >> output, "  " + stretch + "\n"
-            output.write(" shift =\n")
-            shift = str(par['Shift'])
-            print >> output, "  " + shift + "\n"
+                    iFix = [i / 2 for i in value[-1]]
+                for l in iFix:
+                    output.write('%s ' % l)
+            output.write('\nstretch =\n')
+            output.write(str(par['Stretch']))
+            output.write('\nshift =\n')
+            output.write(str(par['Shift']))
+            output.write('\nequilibrium dir =\n')
+            output.write(str(par['EfitDir']))
+            output.write('\ndata dir =\n')
+            output.write(str(par['FileName']))
         except IndexError:
             pass
     else:
         pass
-    print >> output, '/'
+    output.write('\n/\n')
 
     # write raw data
-    print >> output, "&raw_data"
-    # print >> output, ";#raw data\n"
-    # print >> output, ";  #" + str(par['RhoPsi'])
-    rawx = str(data.x[0])
-    rawx = rawx.replace("array([", "")
-    rawx = rawx.replace("[", "")
-    rawx = rawx.replace("])", "") + "\n"
-    rawx = rawx.replace("]", "") + "\n"
+    output.write('\n&raw_data\n')
+    try:
+        rawX_rho = data['processed_data_rho'].x[0]
+    except AttributeError:
+        rawX_rho = None
+    try:
+        rawX_psi = data['processed_data_psi'].x[0]
+    except AttributeError:
+        rawX_psi = None
     if par['Profile'] == 'ne':
-        rawy = str(data.y * 1.e13)
+        rawY = data['processed_data_rho'].y * 1.e13
     else:
-        rawy = str(data.y)
-    rawy = rawy.replace("[", "")
-    rawy = rawy.replace("]", "") + "\n"
-    print >> output, " " + str(par['RhoPsi']) + " ="
-    print >> output, " " + rawx + "\n"
-    # print >> output, ";  #data"
-    print >> output, " data ="
-    print >> output, " " + rawy + "\n"
-    print >> output, "/"
+        # data['processed_data_rho'].y and data['processed_data_psi'].y are exactly the same
+        rawY = data['processed_data_rho'].y
+    output.write('rho =\n')
+    try:
+        for l in rawX_rho:
+            output.write('%s\n' % l)
+    except TypeError:
+        pass
+    output.write('psi =\n')
+    try:
+        for l in rawX_psi:
+            output.write('%s\n' % l)
+    except TypeError:
+        pass
+    output.write('\ndata =\n')
+    for l in rawY:
+        output.write('%s\n' % l)
+    output.write('/\n')
 
     # write excluded data if any
-    print >> output, "&excluded_data"
-    if library != None:
-        # print >> output, ";#excluded data\n"
-        # print >> output, ";  #" + str(par['RhoPsi'])
-        excludedX = str(library[:, 0])
-        excludedX = excludedX.replace("array([", "")
-        excludedX = excludedX.replace("[", "")
-        excludedX = excludedX.replace("])", "") + "\n"
-        excludedX = excludedX.replace("]", "") + "\n"
-        excludedY = str(library[:, 1])
-        excludedY = excludedY.replace("array([", "")
-        excludedY = excludedY.replace("[", "")
-        excludedY = excludedY.replace("])", "") + "\n"
-        excludedY = excludedY.replace("]", "") + "\n"
-        print >> output, " " + str(par['RhoPsi']) + " ="
-        print >> output, "  " + excludedX
-        # print >> output, ";  #data"
-        print >> output, " data ="
-        print >> output, "  " + excludedY
-    print >> output, "/"
+    output.write('\n&excluded_data\n')
+    if library is not None:
+        excludedX_rho = library['data_rho'][:, 0]
+        excludedX_psi = library['data_psi'][:, 0]
+        # library['data_rho'][:, 1] and library['data_psi'][:, 1] are exactly the same
+        excludedY = library['data_rho'][:, 1]
+        output.write('rho =\n')
+        for l in excludedX_rho:
+            output.write('%s\n' % l)
+        output.write('psi =\n')
+        for l in excludedX_psi:
+            output.write('%s\n' % l)
+        output.write('\ndata =\n')
+        for l in excludedY:
+            output.write('%s\n' % l)
+    output.write('/\n')
 
     # write fitted data
-    print >> output, "&fitted_data"
+    output.write('\n&fitted_data\n')
     try:
-        # print >> output, ";#fitted data\n"
-        rho = np.linspace(0, 1, datafit.y.shape[0])
-        fitX = str(rho)
-        fitX = fitX.replace("[", "")
-        fitX = fitX.replace("]", "") + "\n"
+        fitX = datafit.x[0]
         if par['Profile'] == 'ne':
-            fitY = str(datafit.y[:] * 1.e13)
+            fitY = datafit.y[:] * 1.e13
         else:
-            fitY = str(datafit.y[:])
-        fitY = fitY.replace("[", "")
-        fitY = fitY.replace("]", "") + "\n"
-        # print >> output, ";  " + "#" + str(par['RhoPsi'])
-        print >> output, " " + str(par['RhoPsi']) + " ="
-        print >> output, " " + fitX + "\n"
-        # print >> output, ";  #data"
-        print >> output, " data ="
-        print >> output, " " + fitY
+            fitY = datafit.y[:]
+        output.write('rho =\n')
+        for l in fitX:
+            output.write('%s\n' % l)
+        # output.write('psi =\n')
+        # try:
+        #     for l in fitX_psi:
+        #         output.write('%s\n' % l)
+        # except TypeError:
+        #     pass
+        output.write('\ndata =\n')
+        for l in fitY:
+            output.write('%s\n' % l)
     except:
         pass
-    print >> output, "/"
+    output.write('/\n')
+
+    # write database
+
+    # close the file
+    output.close()
 
 
 def transFloat(l):
@@ -220,13 +228,16 @@ def restoreFile(filename, value, data, datafit, library, par):
     par['Func'] = function
     par['Stretch'] = _input['PARAMS']['stretch']
     par['Shift'] = _input['PARAMS']['shift']
-
+    print _input['PARAMS']
     if par['Func'] == 'tanh_multi':
+        value = [[], [], []]
         value[0] = _input['PARAMS']['c']
     if par['Func'] == 'tanh_0out':
+        value = [[], [], []]
         value[0] = _input['PARAMS']['c']
     elif par['Func'] == 'spline':
         value = _input['PARAMS']['c']
+    print value
 
     if not par['Func'] == 'spline':
         if par['Func'] == 'tanh_multi':

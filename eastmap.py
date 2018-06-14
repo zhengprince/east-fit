@@ -26,7 +26,7 @@ def east_mapping(shot, time, efit_tree, Rz=''):
     gdat = eqdsk_to_1t(gdat, time)
 
     # Do mapping
-    mapping = get_mapping(1, 1, efittree=efit_tree, efdat=gdat)
+    mapping = get_mapping(1, 1, efittree='EFITxx', efdat=gdat)
 
     if Rz != '':
         rhob = mapping['rhob']
@@ -57,7 +57,7 @@ def psi2rho(shot, time, efit_tree, psi):
     gdat = eqdsk_to_1t(gdat, time)
 
     # Do mapping
-    mapping = get_mapping(1, 1, efittree=efit_tree, efdat=gdat)
+    mapping = get_mapping(1, 1, efittree='EFITxx', efdat=gdat)
     rhob = mapping['rhob']
     rho_map = rhob(psi)
 
