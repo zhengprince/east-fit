@@ -104,7 +104,9 @@ class GlobalVar(object):
                           filein_psi=np.array([]),
                           processed_filein_rho=Data(),
                           processed_filein_psi=Data(),
-                          fit=Data())
+                          fit=Data(),
+                          fit_rho=Data(),
+                          fit_psi=Data())
 
         # excluded data
         self.library = dict(data_rho=np.array([]),
@@ -270,6 +272,9 @@ class ImportData(object):
                     elif par['Profile'] == 'Ti':
                         target1 = globalvar.value['diagnostic3_rho']
                         target2 = globalvar.value['diagnostic3_psi']
+                    elif par['Profile'] == 'Vt':
+                        target1 = globalvar.value['diagnostic2_rho']
+                        target2 = globalvar.value['diagnostic2_psi']
                 elif text == 'CXRS (Core)':
                     target1 = globalvar.value['diagnostic1_rho']
                     target2 = globalvar.value['diagnostic1_psi']
@@ -362,8 +367,19 @@ class ImportData(object):
                     elif par['Profile'] == 'Ti':
                         node_p = 'Ti_TXCS'
                         node_err = 'Ti_TXCSerr'
+                    elif par['Profile'] == 'Vt':
+                        node_p = 'Vt_TXCS'
+                        node_err = 'Vt_TXCSerr'
                 elif text == 'CXRS (Core)':
                     subtree = 'CXRS_EAST'
+                    node_r = 'R_CXRS_T'
+                    node_z = 'Z_CXRS_T'
+                    if par['Profile'] == 'Ti':
+                        node_p = 'Ti_CXRS_T'
+                        node_err = 'Ti_CXRS_Terr'
+                    elif par['Profile'] == 'Vt':
+                        node_p = 'Vt_CXRS_T'
+                        node_err = 'Vt_CXRS_Terr'
                 elif text == 'POINT':
                     subtree = 'POINT_Analy'
                 node_times = 'dim_of(' + node_p + ')'
@@ -386,7 +402,7 @@ class ImportData(object):
                 elif text == 'TXCS':
                     result, globalvar = self.txcs(node_times, data_, efit_tree, par, globalvar)
                 elif text == 'CXRS (Core)':
-                    result, globalvar = self.cxrs(efit_tree, globalvar)
+                    result, globalvar = self.cxrs(node_times, data_, efit_tree, par, globalvar)
                 elif text == 'ECE':
                     result, globalvar = self.ece(efit_tree, globalvar)
                 elif text == 'Michelson':
@@ -533,7 +549,7 @@ class ImportData(object):
             mapping = east_mapping(self.shot, self.time, gFilePath, rz)
         else:
             mapping = east_mapping(self.shot, self.time, efit_tree, rz)
-        print 'mapping:', mapping
+        # print 'mapping:', mapping
         resultRho = np.array([mapping['rho'], data]).T
         resultRho = resultRho[np.argsort(resultRho, axis=0)][:, 0]
         resultPsi = np.array([mapping['psi'], data]).T
@@ -556,19 +572,25 @@ class ImportData(object):
         return {'data_rho': resultRho, 'data_psi': resultPsi}, globalvar
 
     # noinspection PyArgumentList
-    def cxrs(self, efit_tree, globalvar):
-        times = mdsvalue('dim_of(Ti_CXRS_T)')
-        # time_window = 0.01  # time window for the MR diagnostic
+    def cxrs(self, node_times, data_, efit_tree, par, globalvar):
+        times = mdsvalue(node_times)
         ind = np.argmin(abs(times - self.time / 1000.))
         time = times[ind]
         index = '[*,' + str(ind) + ']'
-        data = mdsvalue('data(Ti_CXRS_T)' + index) / 1000.
-        err = mdsvalue('data(Ti_CXRS_Terr)' + index) / 1000.
-        r = mdsvalue('data(R_CXRS_T)')
+        if par['Profile'] == 'Ti':
+            data = mdsvalue(data_['p'] + index) / 1000.
+            err = mdsvalue(data_['err'] + index) / 1000.
+        elif par['Profile'] == 'Vt':
+            data = mdsvalue(data_['p'] + index) / 10.
+            err = mdsvalue(data_['err'] + index) / 10.
+        # data = mdsvalue('data(Ti_CXRS_T)' + index) / 1000.
+        # err = mdsvalue('data(Ti_CXRS_Terr)' + index) / 1000.
         not_nan_idx = np.isfinite(data)
         data = data[not_nan_idx]
         err = err[not_nan_idx]
-        z = np.ones(len(r)) * 0.02
+        r = mdsvalue(data_['r'])
+        z = np.ones(len(r)) * -0.02
+        # z = mdsvalue(data_['z'])
         rz = np.transpose([r, z])
         if self.fm:
             efitDir = str(self.efitDir)
