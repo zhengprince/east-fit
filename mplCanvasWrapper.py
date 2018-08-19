@@ -107,15 +107,15 @@ class MplCanvas(FigureCanvas):
         self.par = par
 
         # draw the x,y labels
-        self.ax.set_xlabel(r'$\rho$', fontsize=16, family='Arial')
+        self.ax.set_xlabel(r'$\rho$')#, fontsize=16, family='Arial')
         if par['Profile'] == 'Te':
-            self.ax.set_ylabel(r'$T_e (keV)$', fontsize=16, family='Arial')
+            self.ax.set_ylabel(r'$T_e (keV)$')#, fontsize=16, family='Arial')
         elif par['Profile'] == 'Ti':
-            self.ax.set_ylabel(r'$T_i (keV)$', fontsize=16, family='Arial')
+            self.ax.set_ylabel(r'$T_i (keV)$')#, fontsize=16, family='Arial')
         elif par['Profile'] == 'ne':
-            self.ax.set_ylabel(r'$n_e (10^{19}m^{-3})$', fontsize=16, family='Arial')
+            self.ax.set_ylabel(r'$n_e (10^{19}m^{-3})$')#, fontsize=16, family='Arial')
         elif par['Profile'] == 'Vt':
-            self.ax.set_ylabel(r'$V_t (10^{4}m/s)$', fontsize=16, family='Arial')
+            self.ax.set_ylabel(r'$V_t (10^{4}m/s)$')#, fontsize=16, family='Arial')
 
         # draw the title
         # print 'title'
