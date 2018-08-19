@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 from PyQt4 import QtCore, QtGui, QtWebKit
 
@@ -101,7 +101,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.tab1.frame_6.show()
 
         # connect signals with the functions
-        # spb: spinbox, rb: radio button, le:line edit, tb: toolbox, pb:push button
         self.tab1.spbShot.enterPressed.connect(self.on_pbUpdate_clicked)
         self.tab1.rbFile.toggled.connect(self.on_rbFile_toggled)
         self.tab1.rbRhoMap.toggled.connect(self.on_rbRhoMap_toggled)

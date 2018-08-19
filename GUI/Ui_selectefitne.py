@@ -236,7 +236,7 @@ class Ui_SelectEfitNe(object):
         self.lGFileDir.setText(_translate("SelectEfitNe", "GFile Dir:", None))
         self.tbGFileDir.setText(_translate("SelectEfitNe", "Open", None))
         self.groupBox.setTitle(_translate("SelectEfitNe", "Shot", None))
-        self.pbUpdate.setText(_translate("SelectEfitNe", "Update", None))
+        self.ppbUpdate.setText(_translate("SelectEfitNe", "Update", None))
         self.lTree.setText(_translate("SelectEfitNe", "Tree", None))
         self.lTime.setText(_translate("SelectEfitNe", "Time (ms)", None))
         self.label.setText(_translate("SelectEfitNe", "Select Data From:", None))
