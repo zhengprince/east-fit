@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'MainWindow.ui'
 #
-# Created: Fri Nov  3 01:00:29 2017
+# Created: Mon Aug 20 18:38:53 2018
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -298,7 +298,7 @@ class Ui_MainWindow(object):
         self.leWindowTime.setObjectName(_fromUtf8("leWindowTime"))
         self.horizontalLayout_6.addWidget(self.leWindowTime)
         self.layoutWidget1 = QtGui.QWidget(self.tab_2)
-        self.layoutWidget1.setGeometry(QtCore.QRect(10, 140, 261, 86))
+        self.layoutWidget1.setGeometry(QtCore.QRect(10, 140, 261, 91))
         self.layoutWidget1.setObjectName(_fromUtf8("layoutWidget1"))
         self.horizontalLayout_9 = QtGui.QHBoxLayout(self.layoutWidget1)
         self.horizontalLayout_9.setMargin(0)
@@ -367,6 +367,12 @@ class Ui_MainWindow(object):
         self.gridLayout_4.addWidget(self.sldShift, 1, 2, 1, 1)
         spacerItem5 = QtGui.QSpacerItem(50, 20, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
         self.gridLayout_4.addItem(spacerItem5, 1, 3, 1, 1)
+        self.label_8 = QtGui.QLabel(self.tab_2)
+        self.label_8.setGeometry(QtCore.QRect(295, 177, 31, 17))
+        self.label_8.setObjectName(_fromUtf8("label_8"))
+        self.pbConfirm = QtGui.QPushButton(self.tab_2)
+        self.pbConfirm.setGeometry(QtCore.QRect(340, 172, 71, 27))
+        self.pbConfirm.setObjectName(_fromUtf8("pbConfirm"))
         self.tabWidget.addTab(self.tab_2, _fromUtf8(""))
         self.tab_3 = QtGui.QWidget()
         self.tab_3.setObjectName(_fromUtf8("tab_3"))
@@ -455,6 +461,8 @@ class Ui_MainWindow(object):
         self.lShift.setText(_translate("MainWindow", "Shift:", None))
         self.lShowShfit.setText(_translate("MainWindow", "0", None))
         self.sldShift.setToolTip(_translate("MainWindow", "SHIFT", None))
+        self.label_8.setText(_translate("MainWindow", "=>", None))
+        self.pbConfirm.setText(_translate("MainWindow", "Confirm", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "data control", None))
         self.cbFunctionSelect.setItemText(0, _translate("MainWindow", "tanh_multi", None))
         self.cbFunctionSelect.setItemText(1, _translate("MainWindow", "tanh_0out", None))

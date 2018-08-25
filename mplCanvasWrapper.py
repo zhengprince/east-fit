@@ -1,57 +1,8 @@
 from dataTransfer import *
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui
 from matplotlib.backends.backend_qt4agg import (FigureCanvasQTAgg as FigureCanvas,
                                                 NavigationToolbar2QT as NavigationToolbar)
-# from matplotlib.widgets import Cursor
 import matplotlib.pyplot as plt
-
-
-def line_picker(line, event):
-    # picking with a custom hit test function
-    # you can define custom pickers by setting picker to a callable
-    # function.  The function has the signature
-    #
-    #  hit, props = func(artist, mouseevent)
-    #
-    # to determine the hit test.  if the mouse event is over the artist,
-    # return hit=True and props is a dictionary of
-    # properties you want added to the PickEvent attributes
-    """
-    find the points within a certain distance from the mouseclick in
-    data coords and attach some extra attributes, pickx and picky
-    which are the data points that were picked
-    :param line: artist
-    :param event: mouse event
-    """
-    # for property, value in vars(event).iteritems():
-    #     print property, ": ", value
-    if event.xdata is None:
-        return False, dict()
-    xdata = line.get_xdata()
-    ydata = line.get_ydata()
-    maxd = 0.01
-    d = np.sqrt((xdata - event.xdata) ** 2. + (ydata - event.ydata) ** 2.)
-    # print "xdata:", xdata
-    # print "ydata:", ydata
-    # print "event:", event
-    # print "d=\n", d
-    # ind = np.nonzero(np.less_equal(d, maxd))
-    if not d.any():
-        return False, dict()
-    e = d[np.less_equal(d, maxd)]
-    if not e.any():
-        return False, dict()
-    ind = np.nonzero(np.equal(d, e[np.argmin(e, axis=0)]))
-    # print ind
-    if len(ind):
-        pickx = np.take(xdata, ind)
-        picky = np.take(ydata, ind)
-        props = dict(ind=ind, pickx=pickx, picky=picky)
-        if not pickx.any():
-            return False, dict()
-        return True, props
-    else:
-        return False, dict()
 
 
 class MplCanvas(FigureCanvas):
@@ -80,10 +31,9 @@ class MplCanvas(FigureCanvas):
         self.ls = np.array([], dtype=object)
         self.lined = dict()
         self.artist_label = ''
-        # cursor = Cursor(self.ax, useblit=True, color='red', linewidth=2)
         self.ax.grid(alpha=0.4)
         self.fig.canvas.mpl_connect('pick_event', self.on_pick)
-        self.fig.canvas.mpl_connect('button_press_event', self.on_press)
+        self.fig.canvas.mpl_connect('button_release_event', self.on_press)
 
     def plot(self, datafit):
         if self.l1:
@@ -107,15 +57,15 @@ class MplCanvas(FigureCanvas):
         self.par = par
 
         # draw the x,y labels
-        self.ax.set_xlabel(r'$\rho$')#, fontsize=16, family='Arial')
+        self.ax.set_xlabel(r'$\rho$')
         if par['Profile'] == 'Te':
-            self.ax.set_ylabel(r'$T_e (keV)$')#, fontsize=16, family='Arial')
+            self.ax.set_ylabel(r'$T_e (keV)$')
         elif par['Profile'] == 'Ti':
-            self.ax.set_ylabel(r'$T_i (keV)$')#, fontsize=16, family='Arial')
+            self.ax.set_ylabel(r'$T_i (keV)$')
         elif par['Profile'] == 'ne':
-            self.ax.set_ylabel(r'$n_e (10^{19}m^{-3})$')#, fontsize=16, family='Arial')
+            self.ax.set_ylabel(r'$n_e (10^{19}m^{-3})$')
         elif par['Profile'] == 'Vt':
-            self.ax.set_ylabel(r'$V_t (10^{4}m/s)$')#, fontsize=16, family='Arial')
+            self.ax.set_ylabel(r'$V_t (10^{4}m/s)$')
 
         # draw the title
         # print 'title'
@@ -140,11 +90,11 @@ class MplCanvas(FigureCanvas):
                 self.d1 = self.ax.errorbar(globalvar.value['processed_d1_' + s].x[0],
                                            globalvar.value['processed_d1_' + s].y,
                                            yerr=globalvar.value['diagnostic1_err'], fmt='yd', label=label[0],
-                                           capsize=0, picker=line_picker, alpha=0.8)
+                                           capsize=0, picker=1, alpha=0.8)
             else:
                 self.d1, = self.ax.plot(globalvar.value['processed_d1_' + s].x[0],
                                         globalvar.value['processed_d1_' + s].y, 'yd', label=label[0],
-                                        picker=line_picker, alpha=0.8)
+                                        picker=1, alpha=0.8)
                 # self.ax.plot([globalvar.value['processed_d1_' + s].x[0], globalvar.value['processed_d1_' + s].x[0]],
                 #              [globalvar.value['processed_d1_' + s].y - globalvar.value['diagnostic1_err'] / 2,
                 #               globalvar.value['processed_d1_' + s].y + globalvar.value['diagnostic1_err'] / 2], 'y-')
@@ -158,7 +108,7 @@ class MplCanvas(FigureCanvas):
             if self.d2:
                 self.ax.lines.remove(self.d2)
             self.d2, = self.ax.plot(globalvar.value['processed_d2_' + s].x[0], globalvar.value['processed_d2_' + s].y,
-                                    'ms', label=label[1], picker=line_picker, alpha=0.8)
+                                    'ms', label=label[1], picker=1, alpha=0.8)
         else:
             if self.d2:
                 self.ax.lines.remove(self.d2)
@@ -169,7 +119,7 @@ class MplCanvas(FigureCanvas):
             if self.d3:
                 self.ax.lines.remove(self.d3)
             self.d3, = self.ax.plot(globalvar.value['processed_d3_' + s].x[0], globalvar.value['processed_d3_' + s].y,
-                                    'c^', label=label[2], picker=line_picker, alpha=0.8)
+                                    'c^', label=label[2], picker=1, alpha=0.8)
         else:
             if self.d3:
                 self.ax.lines.remove(self.d3)
@@ -180,7 +130,7 @@ class MplCanvas(FigureCanvas):
             if self.d4:
                 self.ax.lines.remove(self.d4)
             self.d4, = self.ax.plot(globalvar.value['processed_d4_' + s].x[0], globalvar.value['processed_d4_' + s].y,
-                                    'gv', label=label[3], picker=line_picker, alpha=0.8)
+                                    'gv', label=label[3], picker=1, alpha=0.8)
         else:
             if self.d4:
                 self.ax.lines.remove(self.d4)
@@ -194,11 +144,11 @@ class MplCanvas(FigureCanvas):
                 self.d5 = self.ax.errorbar(globalvar.value['processed_d5_' + s].x[0],
                                            globalvar.value['processed_d5_' + s].y,
                                            yerr=globalvar.value['diagnostic5_err'], fmt='r>', label=label[4],
-                                           picker=line_picker, alpha=0.8)
+                                           picker=1, alpha=0.8)
             else:
                 self.d5, = self.ax.plot(globalvar.value['processed_d5_' + s].x[0],
                                         globalvar.value['processed_d5_' + s].y,
-                                        'r>', label=label[4], picker=line_picker, alpha=0.8)
+                                        'r>', label=label[4], picker=1, alpha=0.8)
         else:
             if self.d5:
                 self.ax.lines.remove(self.d5)
@@ -212,7 +162,7 @@ class MplCanvas(FigureCanvas):
                 self.l3, = \
                     self.ax.plot(globalvar.value['processed_filein_' + s].x[0],
                                  globalvar.value['processed_filein_' + s].y,
-                                 'yo', label='raw data', picker=line_picker, alpha=0.8)
+                                 'yo', label='raw data', picker=1, alpha=0.8)
         else:
             if self.l3:
                 self.ax.lines.remove(self.l3)
@@ -224,7 +174,7 @@ class MplCanvas(FigureCanvas):
                 if self.l2:
                     self.ax.lines.remove(self.l2)
                 self.l2, = self.ax.plot(globalvar.library['processed_' + s].x[0], globalvar.library['processed_' + s].y,
-                                        'kx', markersize=10, label='excluded data', picker=line_picker)
+                                        'kx', markersize=10, label='excluded data', picker=1)
             else:
                 if self.l2:
                     self.ax.lines.remove(self.l2)
@@ -293,6 +243,8 @@ class MplCanvas(FigureCanvas):
                 if self.ls[i]:
                     self.ax.lines.remove(self.ls[i])
                 self.ls[i] = None
+        if self.ax.legend_:
+            self.ax.legend_.remove()
         self.draw()
 
     def show_legend(self):
@@ -300,48 +252,22 @@ class MplCanvas(FigureCanvas):
         legend.get_frame().set_edgecolor('None')
         legend.get_frame().set_alpha(0.4)
 
-        # # we will set up a dict mapping legend line to orig line, and enable
-        # # picking on the legend line
-        # for legline, origline in zip(legend.get_lines(), self.lines):
-        #     legline.set_picker(5)
-        #     self.lined[legline] = origline
-
     def on_pick(self, event):
-        ###############################################################
-        # for property, value in vars(event).iteritems():
-        #     print property, ": ", value
-        # for property, value in vars(event.artist).iteritems():
-        #     print property, ": ", value
-        # print '\n\n\n\n\n\n\n'
-        # print event.artist.__getattribute__('_label')
-        # print type(event.artist.__getattribute__('_label'))
-        # print str(event.artist.__getattribute__('_label'))
-        ###############################################################
-        self.artist_label = event.artist.__getattribute__('_label')
-        print('point:', event.pickx, event.picky, self.artist_label)
-        self.pickx = event.pickx
-        self.picky = event.picky
+        N = len(event.ind)
+        if not N:
+            return True
 
-        # # on the pick event, find the orig line corresponding to the
-        # # legend proxy line, and toggle the visibility
-        # legline = event.artist
-        # origline = self.lined[legline]
-        # vis = not origline.get_visible()
-        # origline.set_visible(vis)
-        # # Change the alpha on the line in the legend so we can see what liens
-        # # have been toggled
-        # if vis:
-        #     legline.set_alpha(1.0)
-        # else:
-        #     legline.set_alpha(0.2)
-        # self.fig.canvas.draw()
+        self.artist_label = event.artist.__getattribute__('_label')
+        for junk, ind in enumerate(event.ind):
+            line = event.artist
+            xdata = line.get_xdata()
+            ydata = line.get_ydata()
+            self.pickx = xdata[ind]
+            self.picky = ydata[ind]
+        return True
 
     def on_press(self, event):
         if event.button == 3:
-            # print "before process excluded data\n"
-            # print "value['processed_data_rho]:\n", GlobalVar.value['processed_data_rho']
-            # print "value['processed_d1]:\n", GlobalVar.value['processed_d1']
-            # print 'self.pickx: ', self.pickx
             if not self.pickx:
                 pass
             else:
@@ -358,10 +284,7 @@ class MplCanvas(FigureCanvas):
                     b = 'rho'
                     c = psi2rho
                 # print 'len(self.pickx[0]): ', len(self.pickx[0])
-                if len(self.pickx[0]) != 1:
-                    pick[a] = np.array(zip(self.pickx[0], self.picky[0]))
-                else:
-                    pick[a] = np.array([[self.pickx[0][0], self.picky[0][0]]])
+                pick[a] = np.array([[self.pickx, self.picky]])
                 if self.par['RbFile2']:
                     efitDir = str(self.par['EfitDir'])
                     efitDir = os.path.dirname(efitDir)
@@ -371,16 +294,7 @@ class MplCanvas(FigureCanvas):
                     # tree = str(self.par['Tree'])
                     tmp = c(self.par['Shot'], self.par['Time'], str(self.par['Tree']), pick[a][:, 0])
                     pick[b] = np.array([tmp[b], pick[a][:, 1]]).T
-                print 'pick=', pick
                 self.g = process_excluded_data(self.artist_label, self.par['Profile'], self.par, self.g, pick)
-                # if type(excluded_data).__module__ == np.__name__:  # if it's not numpy type,it's NoneType
-                # # if excluded_data.any():
-                #     ExcludedData(excluded_data)
-                # else:
-                #     ExcludedData(excluded_data, False)
-                # print "after process excluded data\n"
-                # print "value['processed_data_rho']:\n", GlobalVar.value['processed_data_rho']
-                # print "value['processed_d1]:\n", GlobalVar.value['processed_d1'], "\n\n\n\n\n"
                 self.plot_data(self.g, self.d, self.par)
 
             if self.l1:
@@ -389,33 +303,6 @@ class MplCanvas(FigureCanvas):
                 elif self.par['Toggle'] == 'psi':
                     processed_data = self.g.value['processed_data_psi']
                 params = self.d.value['Params']
-                # if self.par['Func'] == 'tanh_multi':
-                #     params = GlobalVar9.value['Params']
-                # elif self.par['Func'] == 'tanh_0out':
-                #     params = GlobalVar6.value['Params']
-                # elif self.par['Func'] == 'spline':
-                #     pass
-                # func = self.par['Func']
-                # if self.par['Func'] == 'tanh_multi':
-                #     if len(GlobalVar9.value['Params']) == 0:
-                #         GlobalVar9.value['Params'] = [[970, 50, 100, 20, 100, 0, 0, 0, 0],
-                #                                       [[0, 1000], [0, 1000], [0, 1000], [0, 1000], [0, 1000], [0, 1000],
-                #                                        [0, 1000],
-                #                                        [0, 1000], [0, 1000]], [0, 0, 0, 0, 2, 2, 2, 2, 2]]
-                #     # c = [i / 1000. for i in GlobalVar9.value['Params'][0]]
-                #     # i_fix = [i / 2 for i in GlobalVar9.value['Params'][-1]]
-                # elif self.par['Func'] == 'tanh_0out':
-                #     if len(GlobalVar6.value['Params']) == 0:
-                #         GlobalVar6.value['Params'] = [[950, 100, 2300, -100, 0, 0],
-                #                                       [[0, 1000], [0, 1000], [0, 3000], [0, 1000], [0, 1000],
-                #                                        [0, 1000]],
-                #                                       [0, 0, 0, 2, 2, 2]]
-                #     # c = [i / 1000. for i in GlobalVar6.value['Params'][0]]
-                #     # i_fix = [i / 2 for i in GlobalVar6.value['Params'][-1]]
-                # c = [i / 1000. for i in params[0]]
-                # i_fix = [i / 2 for i in params[-1]]
-                # datafit = processed_data_rho.fit(func, c, epsfcn=1.e-8, use_odr=1, ifixb=i_fix, param=0.)
-                # datafit = datafit.newx(rho)
                 datafit, junk = fit(processed_data, self.par, params)
                 self.plot(datafit)
         else:
@@ -436,22 +323,6 @@ class MplCanvasWrapper(QtGui.QWidget):
         self.datafit = Data()
 
     def fit(self, data, value, par):
-        # func = par['Func']
-        # if len(value['Params']) == 0:
-        #     if func == 'tanh_multi':
-        #         value['Params'] = [[970, 50, 100, 20, 100, 0, 0, 0, 0],
-        #                            [[0, 1000], [0, 1000], [0, 1000], [0, 1000], [0, 1000], [0, 1000], [0, 1000],
-        #                             [0, 1000], [0, 1000]], [0, 0, 0, 0, 2, 2, 2, 2, 2]]
-        #     elif func == 'tanh_0out':
-        #         value['Params'] = [[950, 100, 2300, -100, 0, 0],
-        #                            [[0, 1000], [0, 1000], [0, 3000], [0, 1000], [0, 1000], [0, 1000]],
-        #                            [0, 0, 0, 2, 2, 2]]
-        # c = [i / 1000. for i in value['Params'][0]]
-        # i_fix = [i / 2 for i in value['Params'][-1]]
-        # self.datafit = data['processed_data_rho'].fit(func, c, epsfcn=1.e-8, use_odr=1, ifixb=i_fix, param=0.)
-        # self.datafit = self.datafit.newx(rho)
-        # data['processed_data_rho'].yerror = data['diagnostic5_err']
-        # data['processed_data_psi'].yerror = data['diagnostic5_err']
         if par['Toggle'] == 'rho':
             self.datafit, value['Params'] = fit(data['processed_data_rho'], par, value['Params'])
         elif par['Toggle'] == 'psi':

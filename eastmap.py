@@ -2,7 +2,7 @@ from efit_eqdsk import get_gdat, read_gfiles, eqdsk_to_1t
 from profiles_mapping import get_mapping
 
 
-def east_mapping(shot, time, efit_tree, Rz=''):
+def east_mapping(shot, time, efit_tree, Rz):
     # Programed by Guoqiang Li, July 20, 2015
     # This function is to read the gfile data from MDS+ (if efit_tree=efitrt_east or efit_east)
     #  or from local drive, then map the(R,z) coordinates to flux surface coordinates psi or rho
@@ -11,7 +11,6 @@ def east_mapping(shot, time, efit_tree, Rz=''):
     #  EAST's MDS+ server
     from efit_eqdsk import get_gdat, read_gfiles, eqdsk_to_1t
     from profiles_mapping import get_mapping
-    print shot, time, efit_tree, Rz
     # MDS_SERVER = '202.127.204.12'
     # GFILE: FROM FILE, TIME IS MS; FROM MDS+, TIME IS S.
     if efit_tree == 'efitrt_east' or efit_tree == 'efit_east':
@@ -28,7 +27,7 @@ def east_mapping(shot, time, efit_tree, Rz=''):
     # Do mapping
     mapping = get_mapping(1, 1, efittree='EFITxx', efdat=gdat)
 
-    if Rz != '':
+    if Rz.any():
         rhob = mapping['rhob']
         psirz = gdat['psirz']
         ssibry = gdat['ssibry']
