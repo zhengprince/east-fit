@@ -675,7 +675,7 @@
            <x>10</x>
            <y>140</y>
            <width>261</width>
-           <height>86</height>
+           <height>91</height>
           </rect>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_9">
@@ -856,6 +856,32 @@
           </item>
          </layout>
         </widget>
+        <widget class="QLabel" name="label_8">
+         <property name="geometry">
+          <rect>
+           <x>295</x>
+           <y>177</y>
+           <width>31</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>=&gt;</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="pbConfirm">
+         <property name="geometry">
+          <rect>
+           <x>340</x>
+           <y>172</y>
+           <width>71</width>
+           <height>27</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Confirm</string>
+         </property>
+        </widget>
        </widget>
        <widget class="QWidget" name="tab_3">
         <attribute name="title">
@@ -1021,12 +1047,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>794</x>
-     <y>125</y>
+     <x>988</x>
+     <y>104</y>
     </hint>
     <hint type="destinationlabel">
-     <x>794</x>
-     <y>90</y>
+     <x>674</x>
+     <y>104</y>
     </hint>
    </hints>
   </connection>
@@ -1037,12 +1063,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>794</x>
-     <y>183</y>
+     <x>988</x>
+     <y>139</y>
     </hint>
     <hint type="destinationlabel">
-     <x>794</x>
-     <y>148</y>
+     <x>674</x>
+     <y>139</y>
     </hint>
    </hints>
   </connection>

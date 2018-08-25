@@ -26,7 +26,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(parent)
         self.setupUi(self)
         self.resize(1100, 624)
-        self.listWindowTime.setSelectionMode(QtGui.QAbstractItemView.NoSelection)
+        self.listWindowTime.setSelectionMode(QtGui.QAbstractItemView.MultiSelection)
 
         # set title
         if profile == 'Te':
@@ -101,7 +101,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.tab1.frame_6.show()
 
         # connect signals with the functions
-        # spb:spinbox, rb:radio button, le:line edit, tb:tool box, pb:push button
+        # spb:spinbox, rb:radio button, le:line edit, tb:tool box, pb:push button, l:label, list:list widget
         self.tab1.spbShot.enterPressed.connect(self.on_pbUpdate_clicked)
         self.tab1.rbFile.toggled.connect(self.on_rbFile_toggled)
         self.tab1.rbRhoMap.toggled.connect(self.on_rbRhoMap_toggled)
@@ -192,7 +192,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.tab1.frame_2.hide()
         # self.on_bRePlot_clicked()
         try:
-            # mdsconnect('mds.ipp.ac.cn')
             self.chk_wh_dia_wk()
         except IOError, e:
             print e
@@ -293,6 +292,10 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.initial_list('both')
         self.initial_importData()
         self.initial_diagnostics()
+        self.leWindowTime.setDisabled(False)
+        self.listWindowTime.setDisabled(False)
+        self.leWindowTime.clear()
+        self.listWindowTime.clear()
 
     def on_leWindowTime_returnPressed(self):
         self.listWindowTime.clear()
@@ -301,60 +304,69 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         ntimes = (self.timelist >= self.par['Time'] - self.par['WindowTime']) & \
                  (self.timelist <= self.par['Time'] + self.par['WindowTime'])
         # output the windowing time list
-        self.windowtimelist = np.extract(ntimes, self.timelist)  # self.timelist[ntimes]
+        wtList = np.extract(ntimes, self.timelist)  # self.timelist[ntimes]
         # delete the element of self.par['Time']
-        print 'self.par["Time"]:', self.par['Time'], '\n', 'self.windowtimelist:', self.windowtimelist, ' end'
-        self.windowtimelist = self.windowtimelist[self.windowtimelist != float(self.par['Time'])]
-        print 'self.windowtimelist:', self.windowtimelist
+        wtList = wtList[wtList != float(self.par['Time'])]
         # display the number of the windowing time on the left of the list widget
-        self.lNTimes.setText(str(self.windowtimelist.size))
+        self.lNTimes.setText(str(wtList.size))
         # show the windowing time list in the list widget
-        for i in self.windowtimelist:
+        for i in wtList:
             # [2:-2] will delete the "[[" "]]", eg. [[1]] => 1
-            s = str(np.argwhere(self.windowtimelist == i) + 1)[2:-2] + "  " + str('%0.3f' % i)
+            s = str(np.argwhere(wtList == i) + 1)[2:-2] + "  " + str('%0.3f' % i)
             self.listWindowTime.addItem(s)
-        # for i in self.listWindowTime.selectedItems():
-        #     # separate the string with space, and index 1 is what we want
-        #     print float(np.fromstring(str(i.text()), sep=" ")[1])
+
+    @QtCore.pyqtSignature("")
+    def on_pbConfirm_clicked(self):
+        self.leWindowTime.setDisabled(True)
+        self.listWindowTime.setDisabled(True)
+        print self.g.value['data_rho']
+        print "========================="
+        print self.g.value['data_rho'][:, 0] == self.g.value['processed_data_rho'].x[0]
+        print "========================="
+
+    def addData(self, v1, v2, n):
+        for s in 'rho', 'psi':
+            v1['diagnostic' + n + '_' + s] = np.concatenate((v1['diagnostic' + n + '_' + s],
+                                                             v2['diagnostic' + n + '_' + s]), axis=0)
+            v1['diagnostic' + n + '_' + s] = v1['diagnostic' + n + '_' + s][
+                                                 np.argsort(v1['diagnostic' + n + '_' + s], axis=0)][:, 0]
+            v1['data_' + s] = v1['diagnostic' + n + '_' + s]
+        return v1
+
+    def delData(self, v1, v2, n):
+        for s in 'rho', 'psi':
+            for i in v2['diagnostic' + n + '_' + s]:
+                v1['diagnostic' + n + '_' + s] = \
+                    v1['diagnostic' + n + '_' + s][v1['diagnostic' + n + '_' + s] != i].reshape(-1, 2)
+            v1['data_' + s] = v1['diagnostic' + n + '_' + s]
+        return v1
+
+    def on_listWindowTime_itemClicked(self):
+        """
+        click (selected) -> return the plot of the clicked time (not other selected times)
+        click (unselected) -> clear the plot of this time, other selected times remains.
+        :return:
+        """
+        _g = GlobalVar()
         par_tmp = self.par
-        print 'par_tmp:', par_tmp
-        for i in self.windowtimelist:
-            par_tmp['Time'] = i
-            if self.par['Diag1']:
+        par_tmp['Time'] = float(np.fromstring(str(self.listWindowTime.currentItem().text()), sep=" ")[1])
+        for _obj in [self.tab1.diagnostics1, self.tab1.diagnostics2, self.tab1.diagnostics3, self.tab1.diagnostics4,
+                     self.tab1.diagnostics5]:
+            if _obj == self.tab1.diagnostics1: dia = 'Diag1'; n = '1'
+            elif _obj == self.tab1.diagnostics2: dia = 'Diag2'; n = '2'
+            elif _obj == self.tab1.diagnostics3: dia = 'Diag3'; n = '3'
+            elif _obj == self.tab1.diagnostics4: dia = 'Diag4'; n = '4'
+            elif _obj == self.tab1.diagnostics5: dia = 'Diag5'; n = '5'
+            if self.par[dia]:
                 if self.tab1.rbMdsPlus_2.isChecked():
-                    self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics1.text())
+                    g_tmp = self.importData.mds_mds_n_file_mds(_g, par_tmp, _obj.text())
                 elif self.tab1.rbFile_2.isChecked():
-                    self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics1.text(),
-                                                                file_mds=True)
-                self.plot_data(par_tmp)
-                # if self.par['Diag2']:
-                #     if self.tab1.rbMdsPlus_2.isChecked():
-                #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics2.text())
-                #     elif self.tab1.rbFile_2.isChecked():
-                #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics2.text(),
-                #                                                     file_mds=True)
-                #     self.plot_data(par_tmp)
-                # if self.par['Diag3']:
-                #     if self.tab1.rbMdsPlus_2.isChecked():
-                #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics3.text())
-                #     elif self.tab1.rbFile_2.isChecked():
-                #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics3.text(),
-                #                                                     file_mds=True)
-                #     self.plot_data(par_tmp)
-                # if self.par['Diag4']:
-                #     if self.tab1.rbMdsPlus_2.isChecked():
-                #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics4.text())
-                #     elif self.tab1.rbFile_2.isChecked():
-                #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics4.text(),
-                #                                                     file_mds=True)
-                #     self.plot_data(par_tmp)
-                # if self.par['Diag5']:
-                #     if self.tab1.rbMdsPlus_2.isChecked():
-                #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics5.text())
-                #     elif self.tab1.rbFile_2.isChecked():
-                #         self.g = self.importData.mds_mds_n_file_mds(self.g, par_tmp, self.tab1.diagnostics5.text(),
-                #                                                     file_mds=True)
-                #     self.plot_data(par_tmp)
+                    g_tmp = self.importData.mds_mds_n_file_mds(_g, par_tmp, _obj.text(), file_mds=True)
+                if self.listWindowTime.currentItem().isSelected():
+                    self.g.value = self.addData(self.g.value, g_tmp.value, n)
+                else:
+                    self.g.value = self.delData(self.g.value, g_tmp.value, n)
+        self.plot_data(par_tmp)
 
     def on_tbGFileDir_clicked(self):
         dlg = QtGui.QFileDialog(self)
@@ -362,7 +374,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             _path = os.path.dirname(str(self.par['EfitDir']))
         else:
             _path = os.path.abspath('.')
-        print '_path=', _path
         self.par['EfitDir'] = dlg.getOpenFileName(self,
                                                   u"Choose the GFile",
                                                   _path)
@@ -379,7 +390,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         # check which diagnostics work
         if self.tab1.rbMdsPlus.isChecked():
-            # mdsconnect('202.127.204.12')
             self.chk_wh_dia_wk()
 
     def on_tbData_clicked(self):
@@ -399,11 +409,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
                                                    "All Files (*);;Text Files (*.txt)")
         if not self.par['FileName']:
             return
-        # files = []
-        # for i in self.par['FileName']:
-        #     print i
-        #     files.append(str(i))
-        #     print files
         if not self.par['FileName'].isEmpty():
             self.tab1.leDataDir.setText(str(self.par['FileName']))
             self.lShowData.setText('FILE')
@@ -433,26 +438,17 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             if self.tab1.rbRZMap.isChecked():
                 self.g = self.importData.file_file(self.g, self.par)
             elif self.tab1.rbRhoMap.isChecked():
-                # self.g.value['data_rho'] = openFile(self.par['FileName'])['all']
                 tmp = openFile(self.par['FileName'])['all']
                 self.g.value['data_rho'] = tmp[np.argsort(tmp, axis=0)][:, 0]
                 self.g.value['filein_rho'] = self.g.value['data_rho']
                 self.g.d(filein_rho=self.g.value['data_rho'])
                 self.lShowEfitTree.setText('None')
-                # self.g.value['data_psi'] = rho2psi(self.shot, self.time, str(self.par['EfitDir']),
-                #                                    self.g.value['data_rho'])
-                # self.g.value['filein_psi'] = self.g.value['data_psi']
-                # self.g.d(filein_psi=self.g.value['data_psi'])
             elif self.tab1.rbPsiMap.isChecked():
                 tmp = openFile(self.par['FileName'])['all']
                 self.g.value['data_psi'] = tmp[np.argsort(tmp, axis=0)][:, 0]
                 self.g.value['filein_psi'] = self.g.value['data_psi']
                 self.g.d(filein_psi=self.g.value['data_psi'])
                 self.lShowEfitTree.setText('None')
-                # self.g.value['data_rho'] = psi2rho(self.shot, self.time, str(self.par['EfitDir']),
-                #                                    self.g.value['data_psi'])
-                # self.g.value['filein_rho'] = self.g.value['data_rho']
-                # self.g.d(filein_rho=self.g.value['data_rho'])
         elif self.tab1.rbMdsPlus_2.isChecked():
             if self.tab1.rbRZMap.isChecked():
                 self.g.value['data_rho'] = openFile(self.par['FileName'])
@@ -466,10 +462,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 self.g.d(filein_rho=self.g.value['data_rho'])
                 self.lShowEfitTree.setText('None')
                 self.lShowData.setText('FILE')
-                # self.g.value['data_psi'] = rho2psi(self.shot, self.time, str(self.par['EfitDir']),
-                #                                    self.g.value['data_rho'])
-                # self.g.value['filein_psi'] = self.g.value['data_psi']
-                # self.g.d(filein_psi=self.g.value['data_psi'])
             elif self.tab1.rbPsiMap.isChecked():
                 tmp = openFile(self.par['FileName'])['all']
                 self.g.value['data_psi'] = tmp[np.argsort(tmp, axis=0)][:, 0]
@@ -477,10 +469,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 self.g.d(filein_psi=self.g.value['data_psi'])
                 self.lShowEfitTree.setText('None')
                 self.lShowData.setText('FILE')
-                # self.g.value['data_rho'] = psi2rho(self.shot, self.time, str(self.par['EfitDir']),
-                #                                    self.g.value['data_psi'])
-                # self.g.value['filein_rho'] = self.g.value['data_rho']
-                # self.g.d(filein_rho=self.g.value['data_rho'])
 
     @QtCore.pyqtSignature("")
     def on_bSave_clicked(self):
@@ -682,7 +670,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
                   '<body>'
                   '<p><font size="18" face="Lucida Grande"><b>EAST fit</b></font></p>'
                   '<p><font size="5" face="Lucida Grande"><b>A Profile Fitting Tool for EAST</b></font></p>'
-                  '<p><font face="Lucida Grande">v0.3.5b</font></p>'
+                  '<p><font face="Lucida Grande">v0.4a</font></p>'
                   '<hr>'
                   '<p><font face="Lucida Grande">If you have any questions or advices,</font></p>'
                   '<p><font face="Lucida Grande">please contact with:</font></p>'
@@ -730,7 +718,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.par['Time'] = time
         self.lShowTime.setNum(time)
         if self.tab1.rbMdsPlus.isChecked():
-            # mdsconnect('mds.ipp.ac.cn')
             self.chk_wh_dia_wk()
 
     # noinspection PyArgumentList
@@ -854,7 +841,6 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             else:
                 self.tab1.diagnostics2.setDisabled(False)
                 print 'Vt_TXCS data:\t .... .... .... OK'
-                # mdsdisconnect()
 
     def initial_diagnostics(self):
         if self.par['Profile'] == 'Te':
@@ -885,44 +871,18 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
     def initial_importData(self):
         from data import Data
-        self.g.value['data_rho'] = np.array([])
-        self.g.value['data_psi'] = np.array([])
-        self.g.value['filein_rho'] = np.array([])
-        self.g.value['filein_psi'] = np.array([])
-        self.g.value['diagnostic1_rho'] = np.array([])
-        self.g.value['diagnostic2_rho'] = np.array([])
-        self.g.value['diagnostic3_rho'] = np.array([])
-        self.g.value['diagnostic4_rho'] = np.array([])
-        self.g.value['diagnostic5_rho'] = np.array([])
-        self.g.value['diagnostic1_psi'] = np.array([])
-        self.g.value['diagnostic2_psi'] = np.array([])
-        self.g.value['diagnostic3_psi'] = np.array([])
-        self.g.value['diagnostic4_psi'] = np.array([])
-        self.g.value['diagnostic5_psi'] = np.array([])
-        self.g.value['diagnostic1_err'] = np.array([])
-        self.g.value['diagnostic2_err'] = np.array([])
-        self.g.value['diagnostic3_err'] = np.array([])
-        self.g.value['diagnostic4_err'] = np.array([])
-        self.g.value['diagnostic5_err'] = np.array([])
-        self.g.value['time1'] = float
-        self.g.value['time2'] = float
-        self.g.value['time3'] = float
-        self.g.value['time4'] = float
-        self.g.value['time5'] = float
-        self.g.value['processed_data_rho'] = Data()
-        self.g.value['processed_data_psi'] = Data()
-        self.g.value['processed_filein_rho'] = Data()
-        self.g.value['processed_filein_psi'] = Data()
-        self.g.value['processed_d1_rho'] = Data()
-        self.g.value['processed_d2_rho'] = Data()
-        self.g.value['processed_d3_rho'] = Data()
-        self.g.value['processed_d4_rho'] = Data()
-        self.g.value['processed_d5_rho'] = Data()
-        self.g.value['processed_d1_psi'] = Data()
-        self.g.value['processed_d2_psi'] = Data()
-        self.g.value['processed_d3_psi'] = Data()
-        self.g.value['processed_d4_psi'] = Data()
-        self.g.value['processed_d5_psi'] = Data()
+        for s in ['data_rho', 'data_psi', 'filein_rho', 'filein_psi',
+                  'diagnostic1_rho', 'diagnostic2_rho', 'diagnostic3_rho', 'diagnostic4_rho', 'diagnostic5_rho',
+                  'diagnostic1_psi', 'diagnostic2_psi', 'diagnostic3_psi', 'diagnostic4_psi', 'diagnostic5_psi',
+                  'diagnostic1_err', 'diagnostic2_err', 'diagnostic3_err', 'diagnostic4_err', 'diagnostic5_err']:
+            self.g.value[s] = np.array([])
+        for s in ['time1', 'time2', 'time3', 'time4', 'time5']:
+            self.g.value[s] = float
+        for s in ['processed_data_rho', 'processed_data_psi', 'processed_filein_rho', 'processed_filein_psi',
+                  'processed_d1_rho', 'processed_d2_rho', 'processed_d3_rho', 'processed_d4_rho',
+                  'processed_d5_rho', 'processed_d1_psi', 'processed_d2_psi', 'processed_d3_psi',
+                  'processed_d4_psi', 'processed_d5_psi']:
+            self.g.value[s] = Data()
         self.g.library['data_rho'] = np.array([])
         self.g.library['data_psi'] = np.array([])
         self.g.library['processed_rho'] = Data()
