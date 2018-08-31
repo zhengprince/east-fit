@@ -86,18 +86,15 @@ class MplCanvas(FigureCanvas):
             # print "globalvar.value['processed_d1_'+s]\n", globalvar.value['processed_d1_'+s], "\n\n\n\n"
             if self.d1:
                 self.ax.lines.remove(self.d1)
-            if 0:  # globalvar.value['diagnostic1_err'].any():
+            if 1:  # globalvar.value['diagnostic1_err'].any():
                 self.d1 = self.ax.errorbar(globalvar.value['processed_d1_' + s].x[0],
                                            globalvar.value['processed_d1_' + s].y,
                                            yerr=globalvar.value['diagnostic1_err'], fmt='yd', label=label[0],
-                                           capsize=0, picker=1, alpha=0.8)
+                                           capsize=3, picker=1, alpha=0.8)
             else:
                 self.d1, = self.ax.plot(globalvar.value['processed_d1_' + s].x[0],
                                         globalvar.value['processed_d1_' + s].y, 'yd', label=label[0],
                                         picker=1, alpha=0.8)
-                # self.ax.plot([globalvar.value['processed_d1_' + s].x[0], globalvar.value['processed_d1_' + s].x[0]],
-                #              [globalvar.value['processed_d1_' + s].y - globalvar.value['diagnostic1_err'] / 2,
-                #               globalvar.value['processed_d1_' + s].y + globalvar.value['diagnostic1_err'] / 2], 'y-')
         else:
             if self.d1:
                 self.ax.lines.remove(self.d1)
@@ -257,6 +254,8 @@ class MplCanvas(FigureCanvas):
         if not N:
             return True
 
+        # print '\n'.join(['%s:%s' % item for item in self.d1[1].__dict__.items()])
+        print '\n'.join(['%s:%s' % item for item in event.artist.__dict__.items()])
         self.artist_label = event.artist.__getattribute__('_label')
         for junk, ind in enumerate(event.ind):
             line = event.artist
