@@ -499,7 +499,6 @@ class ImportData(object):
             globalvar.value['time2'] = time
             globalvar.d(d2_rho=resultRho)
             globalvar.d(d2_psi=resultPsi)
-        print "globalvar.value['diagnostic1_err']", globalvar.value['diagnostic1_err']
         return {'data_rho': resultRho, 'data_psi': resultPsi}, globalvar
 
     # noinspection PyArgumentList

@@ -350,8 +350,10 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         _g = GlobalVar()
         par_tmp = self.par
         par_tmp['Time'] = float(np.fromstring(str(self.listWindowTime.currentItem().text()), sep=" ")[1])
-        for _obj in [self.tab1.diagnostics1, self.tab1.diagnostics2, self.tab1.diagnostics3, self.tab1.diagnostics4,
-                     self.tab1.diagnostics5]:
+        for _obj in [self.tab1.diagnostics1, self.tab1.diagnostics2, self.tab1.diagnostics3] or \
+                [self.tab1.diagnostics1, self.tab1.diagnostics2, self.tab1.diagnostics3, self.tab1.diagnostics4] or \
+                [self.tab1.diagnostics1, self.tab1.diagnostics2, self.tab1.diagnostics3, self.tab1.diagnostics4,
+                 self.tab1.diagnostics5]:
             if _obj == self.tab1.diagnostics1: dia = 'Diag1'; n = '1'
             elif _obj == self.tab1.diagnostics2: dia = 'Diag2'; n = '2'
             elif _obj == self.tab1.diagnostics3: dia = 'Diag3'; n = '3'
