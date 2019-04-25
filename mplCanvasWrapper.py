@@ -1,74 +1,18 @@
+from dataTransfer import *
 from PyQt4 import QtGui
-from data import Data
 from matplotlib.backends.backend_qt4agg import (FigureCanvasQTAgg as FigureCanvas,
                                                 NavigationToolbar2QT as NavigationToolbar)
-# from matplotlib.widgets import Cursor
-import numpy as np
 import matplotlib.pyplot as plt
-from dataTransfer import GlobalVar6, GlobalVar9, ExcludedData, DataBase, ImportData
-
-MP = 1.67e-27  # the mass of proton, in kg
-ee = 1.602e-19
-zz = 6  # Carbon
-zeff = 2.5  #
-nedge = 10  # edge points to fix current
-rho = np.linspace(0, 1.0, 51)
-
-
-def line_picker(line, event):
-    # picking with a custom hit test function
-    # you can define custom pickers by setting picker to a callable
-    # function.  The function has the signature
-    #
-    #  hit, props = func(artist, mouseevent)
-    #
-    # to determine the hit test.  if the mouse event is over the artist,
-    # return hit=True and props is a dictionary of
-    # properties you want added to the PickEvent attributes
-    """
-    find the points within a certain distance from the mouseclick in
-    data coords and attach some extra attributes, pickx and picky
-    which are the data points that were picked
-    :param line: artist
-    :param event: mouse event
-    """
-    # for property, value in vars(event).iteritems():
-    #     print property, ": ", value
-    if event.xdata is None:
-        return False, dict()
-    xdata = line.get_xdata()
-    ydata = line.get_ydata()
-    maxd = 0.05
-    d = np.sqrt((xdata - event.xdata) ** 2. + (ydata - event.ydata) ** 2.)
-    print "xxxxxxxxxxxxxxxxxx\nlen(d)=", len(d)
-    ind_min = np.argmin(d)
-    print ind_min
-    tmp = d != d
-    print tmp
-    tmp[ind_min] = True
-    print tmp
-    ind = np.nonzero(np.less_equal(d, maxd))
-    print ind
-    ind *= tmp
-    if len(ind):
-        pickx = np.take(xdata, ind)
-        picky = np.take(ydata, ind)
-        props = dict(ind=ind, pickx=pickx, picky=picky)
-        if not pickx.any():
-            return False, dict()
-        return True, props
-    else:
-        return False, dict()
 
 
 class MplCanvas(FigureCanvas):
-    def __init__(self):
+    def __init__(self, parent=None):
         self.fig = plt.Figure()
         self.ax = self.fig.add_subplot(111)
         FigureCanvas.__init__(self, self.fig)
+        self.setParent(parent)
         FigureCanvas.setSizePolicy(self, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
-        self.ax.set_xlabel(r'$\rho$', fontsize=16)
         # set the range of x axis
         self.ax.set_xlim(0, 1.2)
         self.pickx = []
@@ -84,50 +28,73 @@ class MplCanvas(FigureCanvas):
         self.d4 = None
         self.d5 = None
         self.lines = []
+        self.ls = np.array([], dtype=object)
         self.lined = dict()
         self.artist_label = ''
-        # cursor = Cursor(self.ax, useblit=True, color='red', linewidth=2)
-        self.ax.grid(True)
+        self.ax.grid(alpha=0.4)
         self.fig.canvas.mpl_connect('pick_event', self.on_pick)
-        self.fig.canvas.mpl_connect('button_press_event', self.on_press)
+        self.fig.canvas.mpl_connect('button_release_event', self.on_press)
 
     def plot(self, datafit):
         if self.l1:
             self.ax.lines.remove(self.l1)
         self.l1, = self.ax.plot(datafit.x[0], datafit.y, 'b-', linewidth=3, label='fitted')
         self.show_legend()
-        self.draw()
+        if self.par['vis']:
+            pass
+        else:
+            self.draw()
 
-    def plot_data(self, par):
+    def plot_data(self, globalvar, d, par):
         """
         plot_data
+        :param d:
+        :param globalvar:          GlobalVar
         :param par:                parameter dictionary from main window
         """
+        self.g = globalvar
+        self.d = d
         self.par = par
 
         # draw the x,y labels
+        self.ax.set_xlabel(r'$\rho$')
         if par['Profile'] == 'Te':
-            self.ax.set_ylabel(r'$T_e (keV)$', fontsize=16)
+            self.ax.set_ylabel(r'$T_e (keV)$')
         elif par['Profile'] == 'Ti':
-            self.ax.set_ylabel(r'$T_i (keV)$', fontsize=16)
+            self.ax.set_ylabel(r'$T_i (keV)$')
         elif par['Profile'] == 'ne':
-            self.ax.set_ylabel(r'$n_e (10^{19}m^{-3})$', fontsize=16)
+            self.ax.set_ylabel(r'$n_e (10^{19}m^{-3})$')
+        elif par['Profile'] == 'Vt':
+            self.ax.set_ylabel(r'$V_t (10^{4}m/s)$')
 
         # draw the title
         # print 'title'
-        title = get_title(par)
-        self.ax.set_title(title)
+        title = get_title(self.g, par)
+        self.ax.set_title(title, fontsize=11, family='Arial')
 
         # draw each diagnostic separately
         label = get_label(par)
+
+        if self.par['Toggle'] == 'rho':
+            s = 'rho'
+        elif self.par['Toggle'] == 'psi':
+            s = 'psi'
+
         # draw diagnostic 1
         if par['Diag1']:
-            # print "in plot_data\nvalue['diagnostic1']:\n", value['diagnostic1']
-            # print "value['processed_d1']\n", value['processed_d1'], "\n\n\n\n"
+            # print "in plot_data\nglobalvar.value['diagnostic1']:\n", globalvar.value['diagnostic1']
+            # print "globalvar.value['processed_d1_'+s]\n", globalvar.value['processed_d1_'+s], "\n\n\n\n"
             if self.d1:
                 self.ax.lines.remove(self.d1)
-            self.d1, = self.ax.plot(ImportData.value['processed_d1'].x[0], ImportData.value['processed_d1'].y,
-                                    'yd', label=label[0], picker=line_picker, alpha=0.8)
+            if 1:  # globalvar.value['diagnostic1_err'].any():
+                self.d1 = self.ax.errorbar(globalvar.value['processed_d1_' + s].x[0],
+                                           globalvar.value['processed_d1_' + s].y,
+                                           yerr=globalvar.value['diagnostic1_err'], fmt='yd', label=label[0],
+                                           capsize=3, picker=1, alpha=0.8)
+            else:
+                self.d1, = self.ax.plot(globalvar.value['processed_d1_' + s].x[0],
+                                        globalvar.value['processed_d1_' + s].y, 'yd', label=label[0],
+                                        picker=1, alpha=0.8)
         else:
             if self.d1:
                 self.ax.lines.remove(self.d1)
@@ -137,8 +104,8 @@ class MplCanvas(FigureCanvas):
         if par['Diag2']:
             if self.d2:
                 self.ax.lines.remove(self.d2)
-            self.d2, = self.ax.plot(ImportData.value['processed_d2'].x[0], ImportData.value['processed_d2'].y,
-                                    'ms', label=label[1], picker=line_picker, alpha=0.8)
+            self.d2, = self.ax.plot(globalvar.value['processed_d2_' + s].x[0], globalvar.value['processed_d2_' + s].y,
+                                    'ms', label=label[1], picker=1, alpha=0.8)
         else:
             if self.d2:
                 self.ax.lines.remove(self.d2)
@@ -148,8 +115,8 @@ class MplCanvas(FigureCanvas):
         if par['Diag3']:
             if self.d3:
                 self.ax.lines.remove(self.d3)
-            self.d3, = self.ax.plot(ImportData.value['processed_d3'].x[0], ImportData.value['processed_d3'].y,
-                                    'c^', label=label[2], picker=line_picker, alpha=0.8)
+            self.d3, = self.ax.plot(globalvar.value['processed_d3_' + s].x[0], globalvar.value['processed_d3_' + s].y,
+                                    'c^', label=label[2], picker=1, alpha=0.8)
         else:
             if self.d3:
                 self.ax.lines.remove(self.d3)
@@ -159,8 +126,8 @@ class MplCanvas(FigureCanvas):
         if par['Diag4']:
             if self.d4:
                 self.ax.lines.remove(self.d4)
-            self.d4, = self.ax.plot(ImportData.value['processed_d4'].x[0], ImportData.value['processed_d4'].y,
-                                    'gv', label=label[3], picker=line_picker, alpha=0.8)
+            self.d4, = self.ax.plot(globalvar.value['processed_d4_' + s].x[0], globalvar.value['processed_d4_' + s].y,
+                                    'gv', label=label[3], picker=1, alpha=0.8)
         else:
             if self.d4:
                 self.ax.lines.remove(self.d4)
@@ -170,8 +137,15 @@ class MplCanvas(FigureCanvas):
         if par['Diag5']:
             if self.d5:
                 self.ax.lines.remove(self.d5)
-            self.d5, = self.ax.plot(ImportData.value['processed_d5'].x[0], ImportData.value['processed_d5'].y,
-                                    'r>', label=label[4], picker=line_picker, alpha=0.8)
+            if 0:  # globalvar.value['diagnostic5_err'].any():
+                self.d5 = self.ax.errorbar(globalvar.value['processed_d5_' + s].x[0],
+                                           globalvar.value['processed_d5_' + s].y,
+                                           yerr=globalvar.value['diagnostic5_err'], fmt='r>', label=label[4],
+                                           picker=1, alpha=0.8)
+            else:
+                self.d5, = self.ax.plot(globalvar.value['processed_d5_' + s].x[0],
+                                        globalvar.value['processed_d5_' + s].y,
+                                        'r>', label=label[4], picker=1, alpha=0.8)
         else:
             if self.d5:
                 self.ax.lines.remove(self.d5)
@@ -183,20 +157,21 @@ class MplCanvas(FigureCanvas):
                 if self.l3:
                     self.ax.lines.remove(self.l3)
                 self.l3, = \
-                    self.ax.plot(ImportData.value['processed_filein'].x[0], ImportData.value['processed_filein'].y,
-                                 'yo', label='raw data', picker=line_picker, alpha=0.8)
+                    self.ax.plot(globalvar.value['processed_filein_' + s].x[0],
+                                 globalvar.value['processed_filein_' + s].y,
+                                 'yo', label='raw data', picker=1, alpha=0.8)
         else:
             if self.l3:
                 self.ax.lines.remove(self.l3)
             self.l3 = None
 
         # draw the excluded data
-        if isinstance(ExcludedData.library['processed'], Data):
-            if len(ExcludedData.library['processed'].x) is not 0:
+        if isinstance(globalvar.library['processed_' + s], Data):
+            if len(globalvar.library['processed_' + s].x) is not 0:
                 if self.l2:
                     self.ax.lines.remove(self.l2)
-                self.l2, = self.ax.plot(ExcludedData.library['processed'].x[0], ExcludedData.library['processed'].y,
-                                        'kx', markersize=10, label='excluded data', picker=line_picker)
+                self.l2, = self.ax.plot(globalvar.library['processed_' + s].x[0], globalvar.library['processed_' + s].y,
+                                        'kx', markersize=10, label='excluded data', picker=1)
             else:
                 if self.l2:
                     self.ax.lines.remove(self.l2)
@@ -207,13 +182,32 @@ class MplCanvas(FigureCanvas):
             self.l2 = None
 
         # set the range of y axis
-        print "ImportData.value['data']=", ImportData.value['data']
-        self.ax.set_ylim(0, np.max(ImportData.value['data'][:, 1]) * 1.2)
+        # print "globalvar.value['data_'+s]=", globalvar.value['data_'+s]
+        if globalvar.value['data_' + s].any():
+            self.lim = self.ax.set_ylim(0, np.max(globalvar.value['data_' + s][:, 1]) * 1.2)
 
         for i in [self.l1, self.l2, self.l3, self.d1, self.d2, self.d3, self.d4, self.d5]:
             if i:
                 self.lines.append(i)
-        self.show_legend()
+        if globalvar.value['data_' + s].any():
+            self.show_legend()
+        self.draw()
+
+    def plot_knots(self, pos, vis=False):
+        if vis:
+            if self.ls.any():
+                for i in range(self.ls.size):
+                    self.ax.lines.remove(self.ls[i])
+                self.ls = np.array([], dtype=object)
+            for i in range(len(pos)):
+                l, = self.ax.plot(pos[i], 0, 'Dr', ms=4, fillstyle='none', alpha=0.4)
+                self.ls = np.insert(self.ls, i, l)
+        else:
+            if self.ls.size:
+                for i in range(self.ls.size):
+                    if self.ls[i]:
+                        self.ax.lines.remove(self.ls[i])
+                    self.ls[i] = None
         self.draw()
 
     def clean_lines(self):
@@ -241,99 +235,74 @@ class MplCanvas(FigureCanvas):
         if self.d5:
             self.ax.lines.remove(self.d5)
             self.d5 = None
+        if self.ls.size:
+            for i in range(self.ls.size):
+                if self.ls[i]:
+                    self.ax.lines.remove(self.ls[i])
+                self.ls[i] = None
+        if self.ax.legend_:
+            self.ax.legend_.remove()
         self.draw()
 
     def show_legend(self):
-        legend = self.ax.legend(loc='upper right', fancybox=True, shadow=True)
+        legend = self.ax.legend(loc='best', fancybox=False, shadow=False)
+        legend.get_frame().set_edgecolor('None')
         legend.get_frame().set_alpha(0.4)
 
-        # # we will set up a dict mapping legend line to orig line, and enable
-        # # picking on the legend line
-        # for legline, origline in zip(legend.get_lines(), self.lines):
-        #     legline.set_picker(5)
-        #     self.lined[legline] = origline
-
     def on_pick(self, event):
-        ###############################################################
-        for property, value in vars(event).iteritems():
-            print property, ": ", value
-        # for property, value in vars(event.artist).iteritems():
-        #     print property, ": ", value
-        # print '\n\n\n\n\n\n\n'
-        print event.artist.__getattribute__('_label')
-        # print type(event.artist.__getattribute__('_label'))
-        # print str(event.artist.__getattribute__('_label'))
-        ###############################################################
-        self.artist_label = event.artist.__getattribute__('_label')
-        print('point:', event.pickx, event.picky, self.artist_label)
-        self.pickx = event.pickx
-        self.picky = event.picky
+        N = len(event.ind)
+        if not N:
+            return True
 
-        # # on the pick event, find the orig line corresponding to the
-        # # legend proxy line, and toggle the visibility
-        # legline = event.artist
-        # origline = self.lined[legline]
-        # vis = not origline.get_visible()
-        # origline.set_visible(vis)
-        # # Change the alpha on the line in the legend so we can see what liens
-        # # have been toggled
-        # if vis:
-        #     legline.set_alpha(1.0)
-        # else:
-        #     legline.set_alpha(0.2)
-        # self.fig.canvas.draw()
+        # print '\n'.join(['%s:%s' % item for item in self.d1[1].__dict__.items()])
+        print '\n'.join(['%s:%s' % item for item in event.artist.__dict__.items()])
+        self.artist_label = event.artist.__getattribute__('_label')
+        for junk, ind in enumerate(event.ind):
+            line = event.artist
+            xdata = line.get_xdata()
+            ydata = line.get_ydata()
+            self.pickx = xdata[ind]
+            self.picky = ydata[ind]
+        return True
 
     def on_press(self, event):
         if event.button == 3:
-            # print "before process excluded data\n"
-            # print "value['processed_data]:\n", ImportData.value['processed_data']
-            # print "value['processed_d1]:\n", ImportData.value['processed_d1']
-            print 'self.pickx: ', self.pickx
-            if self.pickx == []:
+            if not self.pickx:
                 pass
             else:
-                print 'len(self.pickx[0]): ', len(self.pickx[0])
-                if len(self.pickx[0]) != 1:
-                    pick = np.array(zip(self.pickx[0], self.picky[0]))
+                pick = {}
+                a = ''
+                b = ''
+                c = psi2rho
+                if self.par['Toggle'] == 'rho':
+                    a = 'rho'
+                    b = 'psi'
+                    c = rho2psi
+                elif self.par['Toggle'] == 'psi':
+                    a = 'psi'
+                    b = 'rho'
+                    c = psi2rho
+                # print 'len(self.pickx[0]): ', len(self.pickx[0])
+                pick[a] = np.array([[self.pickx, self.picky]])
+                if self.par['RbFile2']:
+                    efitDir = str(self.par['EfitDir'])
+                    efitDir = os.path.dirname(efitDir)
+                    tmp = c(self.par['Shot'], self.par['Time'], efitDir, pick[a][:, 0])
+                    pick[b] = np.array([tmp[b], pick[a][:, 1]]).T
                 else:
-                    pick = np.array([[self.pickx[0][0], self.picky[0][0]]])
-                print "pick=", pick
-                process_excluded_data(self.artist_label, self.par['Profile'], self.par, pick)
-                # if type(excluded_data).__module__ == np.__name__:  # if it's not numpy type,it's NoneType
-                # # if excluded_data.any():
-                #     ExcludedData(excluded_data)
-                # else:
-                #     ExcludedData(excluded_data, False)
-                # print "after process excluded data\n"
-                # print "value['processed_data']:\n", ImportData.value['processed_data']
-                # print "value['processed_d1]:\n", ImportData.value['processed_d1'], "\n\n\n\n\n"
-                self.plot_data(self.par)
+                    # tree = str(self.par['Tree'])
+                    tmp = c(self.par['Shot'], self.par['Time'], str(self.par['Tree']), pick[a][:, 0])
+                    pick[b] = np.array([tmp[b], pick[a][:, 1]]).T
+                self.g = process_excluded_data(self.artist_label, self.par['Profile'], self.par, self.g, pick)
+                self.plot_data(self.g, self.d, self.par)
 
             if self.l1:
-                processed_data = ImportData.value['processed_data']
-                func = self.par['Func']
-                c = []
-                i_fix = []
-                if self.par['Func'] == 'tanh_multi':
-                    func = self.par['Func']
-                    if len(GlobalVar9.value['Params']) == 0:
-                        GlobalVar9.value['Params'] = [[970, 50, 100, 20, 100, 0, 0, 0, 0],
-                                                      [[0, 1000], [0, 1000], [0, 1000], [0, 1000], [0, 1000], [0, 1000],
-                                                       [0, 1000],
-                                                       [0, 1000], [0, 1000]], [0, 0, 0, 0, 2, 2, 2, 2, 2]]
-                    c = [i / 1000. for i in GlobalVar9.value['Params'][0]]
-                    i_fix = [i / 2 for i in GlobalVar9.value['Params'][-1]]
-                elif self.par['Func'] == 'tanh_0out':
-                    func = self.par['Func']
-                    if len(GlobalVar6.value['Params']) == 0:
-                        GlobalVar6.value['Params'] = [[950, 100, 2300, -100, 0, 0],
-                                                      [[0, 1000], [0, 1000], [0, 3000], [0, 1000], [0, 1000],
-                                                       [0, 1000]],
-                                                      [0, 0, 0, 2, 2, 2]]
-                    c = [i / 1000. for i in GlobalVar6.value['Params'][0]]
-                    i_fix = [i / 2 for i in GlobalVar6.value['Params'][-1]]
-                datafit = processed_data.fit(func, c, epsfcn=1.e-8, use_odr=1, ifixb=i_fix, param=0.)
-                datafit = datafit.newx(rho)
+                if self.par['Toggle'] == 'rho':
+                    processed_data = self.g.value['processed_data_rho']
+                elif self.par['Toggle'] == 'psi':
+                    processed_data = self.g.value['processed_data_psi']
+                params = self.d.value['Params']
+                datafit, junk = fit(processed_data, self.par, params)
                 self.plot(datafit)
         else:
             pass
@@ -342,7 +311,7 @@ class MplCanvas(FigureCanvas):
 class MplCanvasWrapper(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
-        self.canvas = MplCanvas()
+        self.canvas = MplCanvas(parent)
         self.vb = QtGui.QVBoxLayout(self)
         self.vb.setMargin(0)
         self.ntb = NavigationToolbar(self.canvas, parent)
@@ -351,101 +320,94 @@ class MplCanvasWrapper(QtGui.QWidget):
         self.setLayout(self.vb)
         self.data = Data()
         self.datafit = Data()
-        # self.actionAbout = QtGui.QAction(self)
-        # self.actionAbout.setObjectName(u"actionAbout")
-        # self.actionAbout.setText("About")
-        # self.actionAbout.triggered.connect(self.about)
 
     def fit(self, data, value, par):
-        # TODO: add 'tsplfun' fit function
-        func = par['Func']
-        if len(value['Params']) == 0:
-            if func == 'tanh_multi':
-                value['Params'] = [[970, 50, 100, 20, 100, 0, 0, 0, 0],
-                                   [[0, 1000], [0, 1000], [0, 1000], [0, 1000], [0, 1000], [0, 1000], [0, 1000],
-                                    [0, 1000], [0, 1000]], [0, 0, 0, 0, 2, 2, 2, 2, 2]]
-            elif func == 'tanh_0out':
-                value['Params'] = [[950, 100, 2300, -100, 0, 0],
-                                   [[0, 1000], [0, 1000], [0, 3000], [0, 1000], [0, 1000], [0, 1000]],
-                                   [0, 0, 0, 2, 2, 2]]
-        c = [i / 1000. for i in value['Params'][0]]
-        i_fix = [i / 2 for i in value['Params'][-1]]
-        self.datafit = data['processed_data'].fit(func, c, epsfcn=1.e-8, use_odr=1, ifixb=i_fix, param=0.)
-        self.datafit = self.datafit.newx(rho)
-
+        if par['Toggle'] == 'rho':
+            self.datafit, value['Params'] = fit(data['processed_data_rho'], par, value['Params'])
+        elif par['Toggle'] == 'psi':
+            self.datafit, value['Params'] = fit(data['processed_data_psi'], par, value['Params'])
         # self.datafit *= 1.0
         self.canvas.plot(self.datafit)
+        if par['Func'] == 'spline':
+            return self.datafit.spline_chisq, value, self.datafit
+        else:
+            return self.datafit.fit_chisq, value, self.datafit
 
-    def plot_data(self, par):
-        process_data(par)
-        self.canvas.plot_data(par)
+    def plot_data(self, globalvar, d, par):
+        globalvar = process_data(globalvar, par)
+        self.canvas.plot_data(globalvar, d, par)
 
     def clean(self):
         self.canvas.clean_lines()
 
-    # def contextMenuEvent(self, event):
-    #     menu = QtGui.QMenu(self)
-    #     menu.addAction(self.actionAbout)
-    #     menu.exec_(QtGui.QCursor().pos())
-    #
-    # def about(self):
-    #     msg = QtGui.QMessageBox(self)
-    #     msg.about(self,
-    #               "About",
-    #               '<html>'
-    #               '<body>'
-    #               '<p>If you have any questions or advices</p>'
-    #               '</p>'
-    #               '</body>'
-    #               '</html>')
+
+def fit(processed_data, par, params):
+    """
+    fit data with fit function
+    :param processed_data:
+    :param par:
+    :param params:
+    :return: datafit, params
+    """
+    # Choose grid sizes
+    if par['FittingRange'] == 1.0:
+        grid = par['GridSize']
+    elif par['FittingRange'] == 1.1:
+        grid = par['GridSize'] + 5
+    elif par['FittingRange'] == 1.2:
+        grid = par['GridSize'] + 10
+    rho = np.linspace(0, par['FittingRange'], grid)
+    # print rho
+    func = par['Func']
+    if par['Func'] == 'tanh_multi' and (len(params) == 0 or len(params) != 3):
+        params = [[970, 50, 100, 20, 100, 0, 0, 0, 0],
+                  [[0, 1000], [0, 1000], [0, 1000], [0, 1000], [0, 1000], [0, 1000], [0, 1000],
+                   [0, 1000], [0, 1000]], [0, 0, 0, 0, 2, 2, 2, 2, 2]]
+    elif par['Func'] == 'tanh_0out' and (len(params) == 0 or len(params) != 3):
+        params = [[950, 100, 2300, -100, 0, 0], [[0, 1000], [0, 1000], [0, 3000], [0, 1000], [0, 1000], [0, 1000]],
+                  [0, 0, 0, 2, 2, 2]]
+    elif par['Func'] == 'spline' and (len(params) == 0 or len(params) != 5):
+        params = [0, 500, 900, 950, 1000]
+    if par['Func'] == 'spline':
+        print params
+        knots = [i / 1000. for i in params]
+    else:
+        c = [i / 1000. for i in params[0]]
+        iFix = [i / 2 for i in params[-1]]
+    if par['Func'] == 'spline':
+        datafit = processed_data.spline(s=20, knots=knots)
+    else:
+        datafit = processed_data.fit(func, c, epsfcn=1.e-8, use_odr=1, ifixb=iFix, param=0.)
+    # print '1111', rho, datafit
+    datafit = datafit.newx(rho)
+    # print '2222', datafit
+    return datafit, params
 
 
-def process_data(par):
-    if len(ImportData.value['data']) is not 0:
-        ImportData.value['processed_data'] = scale_shift(ImportData.value['data'], par)
-    if type(ExcludedData.library['data']).__module__ == np.__name__:
-        if len(ExcludedData.library['data']) is not 0:
-            ExcludedData.library['processed'] = scale_shift(ExcludedData.library['data'], par)
-    else:
-        pass
-    if par['SourceSwitch']:
-        if ImportData.value['diagnostic1'].any():
-            ImportData.value['processed_d1'] = scale_shift(ImportData.value['diagnostic1'], par)
-            # x = ImportData.value['processed_d1'].x[0]
-            # y = np.array(ImportData.value['processed_d1'].y)
-            # temp = np.array([x, y]).T
-            # DataBase(d1=temp)
-        if ImportData.value['diagnostic2'].any():
-            ImportData.value['processed_d2'] = scale_shift(ImportData.value['diagnostic2'], par)
-            # x = ImportData.value['processed_d2'].x[0]
-            # y = np.array(ImportData.value['processed_d2'].y)
-            # temp = np.array([x, y]).T
-            # DataBase(d2=temp)
-        if ImportData.value['diagnostic3'].any():
-            ImportData.value['processed_d3'] = scale_shift(ImportData.value['diagnostic3'], par)
-            # x = ImportData.value['processed_d3'].x[0]
-            # y = np.array(ImportData.value['processed_d3'].y)
-            # temp = np.array([x, y]).T
-            # DataBase(d3=temp)
-        if ImportData.value['diagnostic4'].any():
-            ImportData.value['processed_d4'] = scale_shift(ImportData.value['diagnostic4'], par)
-            # x = ImportData.value['processed_d4'].x[0]
-            # y = np.array(ImportData.value['processed_d4'].y)
-            # temp = np.array([x, y]).T
-            # DataBase(d4=temp)
-        if ImportData.value['diagnostic5'].any():
-            ImportData.value['processed_d5'] = scale_shift(ImportData.value['diagnostic5'], par)
-            # x = ImportData.value['processed_d5'].x[0]
-            # y = np.array(ImportData.value['processed_d5'].y)
-            # temp = np.array([x, y]).T
-            # DataBase(d5=temp)
-    else:
-        if ImportData.value['filein'].any():
-            ImportData.value['processed_filein'] = scale_shift(ImportData.value['filein'], par)
-            # x = ImportData.value['processed_filein'].x[0]
-            # y = np.array(ImportData.value['processed_filein'].y)
-            # temp = np.array([x, y]).T
-            # DataBase(filein=temp)
+def process_data(globalvar, par):
+    for s in 'rho', 'psi':
+        if len(globalvar.value['data_' + s]) is not 0:
+            globalvar.value['processed_data_' + s] = scale_shift(globalvar.value['data_' + s], par)
+        if type(globalvar.library['data_' + s]).__module__ == np.__name__:
+            if len(globalvar.library['data_' + s]) is not 0:
+                globalvar.library['processed_' + s] = scale_shift(globalvar.library['data_' + s], par)
+        else:
+            pass
+        if par['SourceSwitch']:
+            if globalvar.value['diagnostic1_' + s].any():
+                globalvar.value['processed_d1_' + s] = scale_shift(globalvar.value['diagnostic1_' + s], par)
+            if globalvar.value['diagnostic2_' + s].any():
+                globalvar.value['processed_d2_' + s] = scale_shift(globalvar.value['diagnostic2_' + s], par)
+            if globalvar.value['diagnostic3_' + s].any():
+                globalvar.value['processed_d3_' + s] = scale_shift(globalvar.value['diagnostic3_' + s], par)
+            if globalvar.value['diagnostic4_' + s].any():
+                globalvar.value['processed_d4_' + s] = scale_shift(globalvar.value['diagnostic4_' + s], par)
+            if globalvar.value['diagnostic5_' + s].any():
+                globalvar.value['processed_d5_' + s] = scale_shift(globalvar.value['diagnostic5_' + s], par)
+        else:
+            if globalvar.value['filein_' + s].any():
+                globalvar.value['processed_filein_' + s] = scale_shift(globalvar.value['filein_' + s], par)
+    return globalvar
 
 
 def scale_shift(raw, par):
@@ -483,6 +445,8 @@ def get_label(par):
             label[0] = 'CXRS (Core)'
         elif par['Profile'] == 'ne':
             label[0] = 'Reflectometry'
+        elif par['Profile'] == 'Vt':
+            label[0] = 'CXRS (Core)'
 
     # diagnostic 2
     if par['Diag2']:
@@ -492,6 +456,8 @@ def get_label(par):
             label[1] = 'CXRS (Edge)'
         elif par['Profile'] == 'ne':
             label[1] = 'Thomson (Core)'
+        elif par['Profile'] == 'Vt':
+            label[0] = 'TXCS'
 
     # diagnostic 3
     if par['Diag3']:
@@ -523,7 +489,7 @@ def get_label(par):
     return label
 
 
-def get_title(par):
+def get_title(g, par):
     title = ''
     # diagnostic 1
     if par['Diag1']:
@@ -533,7 +499,9 @@ def get_title(par):
             title += 'CXRS'
         elif par['Profile'] == 'ne':
             title += 'Reflectometry'
-        title += ' ' + str(round(ImportData.value['time1'], 3)) + 's' + ' + '
+        elif par['Profile'] == 'Vt':
+            title += 'CXRS'
+        title += ' ' + str(round(g.value['time1'] * 1000, 3)) + 'ms' + ' + '
 
     # diagnostic 2
     if par['Diag2']:
@@ -543,7 +511,9 @@ def get_title(par):
             title += None
         elif par['Profile'] == 'ne':
             title += 'Thomson'
-        title += ' ' + str(round(ImportData.value['time2'], 3)) + 's' + ' + '
+        elif par['Profile'] == 'Vt':
+            title += 'TXCS'
+        title += ' ' + str(round(g.value['time2'] * 1000, 3)) + 'ms' + ' + '
 
     # diagnostic 3
     if par['Diag3']:
@@ -553,7 +523,7 @@ def get_title(par):
             title += 'TXCS'
         elif par['Profile'] == 'ne':
             title += None
-        title += ' ' + str(round(ImportData.value['time3'], 3)) + 's' + ' + '
+        title += ' ' + str(round(g.value['time3'] * 1000, 3)) + 'ms' + ' + '
 
     # diagnostic 4
     if par['Diag4']:
@@ -563,7 +533,7 @@ def get_title(par):
             title += None
         elif par['Profile'] == 'ne':
             title += 'POINT'
-        title += ' ' + str(round(ImportData.value['time4'], 3)) + 's' + ' + '
+        title += ' ' + str(round(g.value['time4'] * 1000, 3)) + 'ms' + ' + '
 
     # diagnostic 5
     if par['Diag5']:
@@ -573,7 +543,7 @@ def get_title(par):
             title += None
         elif par['Profile'] == 'ne':
             title += None
-        title += ' ' + str(round(ImportData.value['time5'], 3)) + 's'
+        title += ' ' + str(round(g.value['time5'] * 1000, 3)) + 'ms'
 
     if title[:3] == ' + ':
         title = title[3:]
@@ -582,134 +552,142 @@ def get_title(par):
     return title
 
 
-def process_excluded_data(label,  # label got from event.artist._label, used to decide to choose which data to process
-                          text,  # Te or Ti or ne
-                          par,  # par
-                          pick):  # event.pickx and event.picky
+def process_excluded_data(label, text, par, globalvar, pick):
     """
     process_excluded_data
     :param label: label got from event.artist._label, used to decide to choose which data to process
     :param text: Te or Ti or ne
     :param par: par
+    :param globalvar: GlobalVar
     :param pick: event.pickx and event.picky
     """
-    # ImportData.value['processed_data'] = process_pick(pick, ImportData.value['processed_data'], par)
-    ImportData.value['data'], ImportData.value['processed_data'] \
-        = process_pick(ImportData.value['processed_data'], ImportData.value['data'], pick, par)
-    if label == 'raw data':
-        ImportData.value['filein'], ImportData.value['processed_filein'] \
-            = process_pick(ImportData.value['processed_filein'], ImportData.value['filein'], pick, par)
-    elif label == 'Thomson (Core)':
-        if text == 'Te':
-            ImportData.value['diagnostic1'], ImportData.value['processed_d1']\
-                = process_pick(ImportData.value['processed_d1'], ImportData.value['diagnostic1'], pick, par)
-        elif text == 'ne':
-            ImportData.value['diagnostic2'], ImportData.value['processed_d2']\
-                = process_pick(ImportData.value['processed_d2'], ImportData.value['diagnostic2'], pick, par)
-    elif label == 'CXRS (Core)':
-        ImportData.value['diagnostic1'], ImportData.value['processed_d1']\
-            = process_pick(ImportData.value['processed_d1'], ImportData.value['diagnostic1'], pick, par)
-    elif label == 'ECE':
-        ImportData.value['diagnostic3'], ImportData.value['processed_d3']\
-            = process_pick(ImportData.value['processed_d3'], ImportData.value['diagnostic3'], pick, par)
-    elif label == 'Michelson':
-        ImportData.value['diagnostic4'], ImportData.value['processed_d4']\
-            = process_pick(ImportData.value['processed_d4'], ImportData.value['diagnostic4'], pick, par)
-    elif label == 'TXCS':
-        if text == 'Te':
-            ImportData.value['diagnostic5'], ImportData.value['processed_d5']\
-                = process_pick(ImportData.value['processed_d5'], ImportData.value['diagnostic5'], pick, par)
-        elif text == 'Ti':
-            ImportData.value['diagnostic3'], ImportData.value['processed_d3']\
-                = process_pick(ImportData.value['processed_d3'], ImportData.value['diagnostic3'], pick, par)
-    elif label == 'Reflectometry':
-        ImportData.value['diagnostic1'], ImportData.value['processed_d1']\
-            = process_pick(ImportData.value['processed_d1'], ImportData.value['diagnostic1'], pick, par)
-    elif label == 'POINT':
-        ImportData.value['diagnostic3'], ImportData.value['processed_d3']\
-            = process_pick(ImportData.value['processed_d3'], ImportData.value['diagnostic3'], pick, par)
-    elif label == 'excluded data':
-        for i in DataBase.library.values():
-            print 'a'
-            pick_tmp1 = Data()
-            pick_tmp1.x = [pick[:, 0]]
-            pick_tmp1.y = pick[:, 1]
-            pick_tmp1 = undo_scale_shift(pick_tmp1, par)
-            for j in pick_tmp1:
-                if j in i:
-                    print 'b'
-                    for key, var in DataBase.library.iteritems():
-                        print 'c'
-                        foo = var == i
-                        print foo
-                        if type(foo).__module__ == np.__name__:
-                            judge = foo.all()
-                        else:
-                            judge = foo
-                        if judge:
-                            print 'd'
-                            process_pick2(pick, ExcludedData.library['processed'], key, par)
+    value = globalvar.value.copy()
+    library = globalvar.library.copy()
+    database = globalvar.database.copy()
+    for s in 'rho', 'psi':
+        globalvar.value['data_' + s], globalvar.value['processed_data_' + s], globalvar.library \
+            = process_pick(value['processed_data_' + s], value['data_' + s], pick[s], library, par, s)
+        if label == 'raw data':
+            globalvar.value['filein_' + s], globalvar.value['processed_filein_' + s], globalvar.library \
+                = process_pick(value['processed_filein_' + s], value['filein_' + s], pick[s], library, par, s)
+        elif label == 'Thomson (Core)':
+            if text == 'Te':
+                globalvar.value['diagnostic1_' + s], globalvar.value['processed_d1_' + s], globalvar.library \
+                    = process_pick(value['processed_d1_' + s], value['diagnostic1_' + s], pick[s], library, par, s)
+            elif text == 'ne':
+                globalvar.value['diagnostic2_' + s], globalvar.value['processed_d2_' + s], globalvar.library \
+                    = process_pick(value['processed_d2_' + s], value['diagnostic2_' + s], pick[s], library, par, s)
+        elif label == 'CXRS (Core)':
+            globalvar.value['diagnostic1_' + s], globalvar.value['processed_d1_' + s], globalvar.library \
+                = process_pick(value['processed_d1_' + s], value['diagnostic1_' + s], pick[s], library, par, s)
+        elif label == 'ECE':
+            globalvar.value['diagnostic3_' + s], globalvar.value['processed_d3_' + s], globalvar.library \
+                = process_pick(value['processed_d3_' + s], value['diagnostic3_' + s], pick[s], library, par, s)
+        elif label == 'Michelson':
+            globalvar.value['diagnostic4_' + s], globalvar.value['processed_d4_' + s], globalvar.library \
+                = process_pick(value['processed_d4_' + s], value['diagnostic4_' + s], pick[s], library, par, s)
+        elif label == 'TXCS':
+            if text == 'Te':
+                globalvar.value['diagnostic5_' + s], globalvar.value['processed_d5_' + s], globalvar.library \
+                    = process_pick(value['processed_d5_' + s], value['diagnostic5_' + s], pick[s], library, par, s)
+            elif text == 'Ti':
+                globalvar.value['diagnostic3_' + s], globalvar.value['processed_d3_' + s], globalvar.library \
+                    = process_pick(value['processed_d3_' + s], value['diagnostic3_' + s], pick[s], library, par, s)
+        elif label == 'Reflectometry':
+            globalvar.value['diagnostic1_' + s], globalvar.value['processed_d1_' + s], globalvar.library \
+                = process_pick(value['processed_d1_' + s], value['diagnostic1_' + s], pick[s], library, par, s)
+        elif label == 'POINT':
+            globalvar.value['diagnostic3_' + s], globalvar.value['processed_d3_' + s], globalvar.library \
+                = process_pick(value['processed_d3_' + s], value['diagnostic3_' + s], pick[s], library, par, s)
+        elif label == 'excluded data':
+            # print "in line 603:\ndatabase=", database, "//\n"
+            pick_tmp = Data()
+            pick_tmp.x = [pick[s][:, 0]]
+            pick_tmp.y = pick[s][:, 1]
+            pick_tmp = undo_scale_shift(pick_tmp, par)
+            for k, i in database.iteritems():
+                # print 'a'
+                if k[-3:] == s:
+                    for j in pick_tmp:
+                        if j in i:
+                            # print 'b'
+                            for key, var in database.iteritems():
+                                # print 'c'
+                                if key[-3:] == s:
+                                    foo = var == i
+                                    # print foo
+                                    if type(foo).__module__ == np.__name__:
+                                        judge = foo.all()
+                                    else:
+                                        judge = foo
+                                    if judge:
+                                        # print 'd'
+                                        globalvar = process_pick2(pick[s], globalvar, key, par, s)
+    return globalvar
 
 
-def process_pick(processed, data, pick, par):
+def process_pick(processed, data, pick, library, par, s):
     """
     if pick is in processed, delete the diagnostic point, return new processed and data
     if not, return original processed and data
+    :param s: string, 'rho' or 'psi'
+    :param library: globalvar.library
     :param processed: original processed
     :param data: original data
     :param pick: pick
     :param par: parameter
     :return: processed, data
     """
-    for i in pick[:, 0]:
-        if i in processed.x[0]:  # if pick is in processed, delete the diagnostic point, return new processed and data
+    for i in pick[:, 1]:
+        if i in processed.y:  # if pick is in processed, delete the diagnostic point, return new processed and data
             # delete the point from processed
             temp1 = processed.copy()
-            ind = temp1.x[0] != i
-            temp1.x[0] = temp1.x[0][ind]
+            ind = temp1.y != i
             temp1.y = temp1.y[ind]
+            temp1.x[0] = temp1.x[0][ind]
             # get data corresponding to processed
             temp2 = undo_scale_shift(temp1, par)
 
             # get point in pick corresponding to i
-            index = pick[:, 0] == i
-            j = pick[:, 1][index][0]
-            point = np.array([[i, j]])
-            # add the point to ExcludedData.library['processed']
-            ExcludedData(point)
-            # get data corresponding to processed of excluded, and add it to ExcludedData.library['data']
-            ExcludedData.library['data'] = undo_scale_shift(ExcludedData.library['processed'], par)
+            index = pick[:, 1] == i
+            j = pick[:, 0][index][0]
+            point = np.array([[j, i]])
+            # add the point to GlobalVar.library['processed_rho']
+            library = ExcludedData(library, point, s)
+            # get data corresponding to processed of excluded, and add it to GlobalVar.library['data_rho']
+            library['data_' + s] = undo_scale_shift(library['processed_' + s], par)
             # return new processed and data
-            return temp2, temp1
+            return temp2, temp1, library
         else:  # if not, return original processed and data
-            return data, processed
+            return data, processed, library
 
 
-def process_pick2(pick, exclude, key, par):
+def process_pick2(pick, globalvar, key, par, s):
     """
-    add pick to processed_data/d1/d2/d3/d4/d5, delete it from excluded data
+    add pick to processed_data_rho/d1/d2/d3/d4/d5, delete it from excluded data
+    :param s: string, 'rho', or 'psi'
+    :param globalvar:
     :param pick: pick
-    :param exclude: excluded data
     :param key: d1, d2, d3, d4, d5
     :param par: par
     """
-    print "in process_pick2, before:\nExcludedData.library=\n", ExcludedData.library
-    temp1 = ImportData.value['processed_data'].copy()
+    # print "in process_pick2, before:\nglobalvar.library=\n", globalvar.library
+    temp1 = globalvar.value['processed_data_' + s].copy()
     if par['SourceSwitch']:
-        if key == 'd1':
-            temp2 = ImportData.value['processed_d1'].copy()
-        if key == 'd2':
-            temp2 = ImportData.value['processed_d2'].copy()
-        if key == 'd3':
-            temp2 = ImportData.value['processed_d3'].copy()
-        if key == 'd4':
-            temp2 = ImportData.value['processed_d4'].copy()
-        if key == 'd5':
-            temp2 = ImportData.value['processed_d5'].copy()
+        if key == 'd1_' + s:
+            temp2 = globalvar.value['processed_d1_' + s].copy()
+        elif key == 'd2_' + s:
+            temp2 = globalvar.value['processed_d2_' + s].copy()
+        elif key == 'd3_' + s:
+            temp2 = globalvar.value['processed_d3_' + s].copy()
+        elif key == 'd4_' + s:
+            temp2 = globalvar.value['processed_d4_' + s].copy()
+        elif key == 'd5_' + s:
+            temp2 = globalvar.value['processed_d5_' + s].copy()
     else:
-        temp2 = ImportData.value['processed_filein'].copy()
+        temp2 = globalvar.value['processed_filein_' + s].copy()
     for i in pick[:, 0]:
-        if i in exclude.x[0]:
+        if i in globalvar.library['processed_' + s].x[0]:
             # if par['SourceSwitch']:
             index = pick[:, 0] == i
             j = pick[:, 1][index][0]
@@ -731,37 +709,38 @@ def process_pick2(pick, exclude, key, par):
             temp4 = undo_scale_shift(temp2, par)
 
             point = np.array([[i, j]])
-            ExcludedData(point, False)
-            ExcludedData.library['data'] = undo_scale_shift(ExcludedData.library['processed'], par)
-            print "in process_pick2:\nExcludedData.library['data']=\n", ExcludedData.library['data']
+            globalvar.library = ExcludedData(globalvar.library, point, s, False)
+            globalvar.library['data_' + s] = undo_scale_shift(globalvar.library['processed_' + s], par)
+            # print "in process_pick2:\nGlobalVar.library['data_rho']=\n", GlobalVar.library['data_rho']
 
             if par['SourceSwitch']:
-                if key == 'd1':
-                    ImportData.value['processed_data'], ImportData.value['processed_d1'] = temp1, temp2
-                    ImportData.value['data'], ImportData.value['diagnostic1'] = temp3, temp4
-                if key == 'd2':
-                    ImportData.value['processed_data'], ImportData.value['processed_d2'] = temp1, temp2
-                    ImportData.value['data'], ImportData.value['diagnostic2'] = temp3, temp4
-                if key == 'd3':
-                    ImportData.value['processed_data'], ImportData.value['processed_d3'] = temp1, temp2
-                    ImportData.value['data'], ImportData.value['diagnostic3'] = temp3, temp4
-                if key == 'd4':
-                    ImportData.value['processed_data'], ImportData.value['processed_d4'] = temp1, temp2
-                    ImportData.value['data'], ImportData.value['diagnostic4'] = temp3, temp4
-                if key == 'd5':
-                    ImportData.value['processed_data'], ImportData.value['processed_d5'] = temp1, temp2
-                    ImportData.value['data'], ImportData.value['diagnostic5'] = temp3, temp4
+                if key == 'd1_' + s:
+                    globalvar.value['processed_data_' + s], globalvar.value['processed_d1_' + s] = temp1, temp2
+                    globalvar.value['data_' + s], globalvar.value['diagnostic1_' + s] = temp3, temp4
+                elif key == 'd2_' + s:
+                    globalvar.value['processed_data_' + s], globalvar.value['processed_d2_' + s] = temp1, temp2
+                    globalvar.value['data_' + s], globalvar.value['diagnostic2_' + s] = temp3, temp4
+                elif key == 'd3_' + s:
+                    globalvar.value['processed_data_' + s], globalvar.value['processed_d3_' + s] = temp1, temp2
+                    globalvar.value['data_' + s], globalvar.value['diagnostic3_' + s] = temp3, temp4
+                elif key == 'd4_' + s:
+                    globalvar.value['processed_data_' + s], globalvar.value['processed_d4_' + s] = temp1, temp2
+                    globalvar.value['data_' + s], globalvar.value['diagnostic4_' + s] = temp3, temp4
+                elif key == 'd5_' + s:
+                    globalvar.value['processed_data_' + s], globalvar.value['processed_d5_' + s] = temp1, temp2
+                    globalvar.value['data_' + s], globalvar.value['diagnostic5_' + s] = temp3, temp4
             else:
-                ImportData.value['processed_data'], ImportData.value['processed_filein'] = temp1, temp2
-                ImportData.value['data'], ImportData.value['filein'] = temp3, temp4
+                globalvar.value['processed_data_' + s], globalvar.value['processed_filein_' + s] = temp1, temp2
+                globalvar.value['data_' + s], globalvar.value['filein_' + s] = temp3, temp4
         else:
             pass
-    print "in process_pick2, after:\nExcludedData.library=\n", ExcludedData.library
+            # print "in process_pick2, after:\nglobalvar.library=\n", globalvar.library
+    return globalvar
 
 
 def undo_scale_shift(data, par):
     temp = data.deepcopy()
-    print "in undo_scale_shift:\ntemp=\n", temp
+    # print "in undo_scale_shift:\ntemp=\n", temp
     h = temp.x[0].shape[0]
     zoom = 1 + par['Stretch'] / 1000.
     for i in range(h):
