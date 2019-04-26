@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from PyQt4 import QtCore, QtGui, QtWebKit
+from PyQt4 import QtCore, QtGui
 
 from GUI.Ui_MainWindow import Ui_MainWindow
 from GUI.Ui_selectefitne import Ui_SelectEfitNe
@@ -12,7 +12,6 @@ from GUI.dialog6 import Dialog6
 from GUI.dialog9 import Dialog9
 from GUI.dialog5 import Dialog5
 from dataTransfer import *
-import re
 
 
 class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
@@ -769,52 +768,62 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             try:
                 mdsopen('TS_EAST', self.par['Shot'])
                 mdsvalue('dim_of(Te_coreTS)')
-            except RuntimeError:
-                print 'Te_coreTS data:\t .... .... .... N/A'
+            except RuntimeError, e:
+                print e
+                # print 'Te_coreTS data:\t .... .... .... N/A'
+                pass
             else:
                 self.tab1.diagnostics1.setDisabled(False)
-                print 'Te_coreTS data:\t .... .... .... OK'
+                # print 'Te_coreTS data:\t .... .... .... OK'
 
             # ECE
             try:
                 mdsopen('HRS_EAST', self.par['Shot'])
                 mdsvalue('dim_of(Te_HRS)')
-            except RuntimeError:
-                print 'Te_HRS data:\t .... .... .... N/A'
+            except RuntimeError, e:
+                print e
+                # print 'Te_HRS data:\t .... .... .... N/A'
+                pass
             else:
                 self.tab1.diagnostics3.setDisabled(False)
-                print 'Te_HRS data:\t .... .... .... OK'
+                # print 'Te_HRS data:\t .... .... .... OK'
 
             # Michelson
             try:
                 mdsopen('MPI_Analy', self.par['Shot'])
                 mdsvalue('dim_of(Te_MI)')
-            except RuntimeError:
-                print 'Te_MI data:\t\t .... .... .... N/A'
+            except RuntimeError, e:
+                print e
+                # print 'Te_MI data:\t\t .... .... .... N/A'
+                pass
             else:
                 self.tab1.diagnostics4.setDisabled(False)
-                print 'Te_MI data:\t\t .... .... .... OK'
+                # print 'Te_MI data:\t\t .... .... .... OK'
 
             # TXCS
             try:
                 mdsopen('TXCS_EAST', self.par['Shot'])
                 mdsvalue('dim_of(Te_TXCS)')
-            except RuntimeError:
-                print 'Te_TXCS data:\t .... .... .... N/A'
+            except RuntimeError, e:
+                print e
+                # print 'Te_TXCS data:\t .... .... .... N/A'
+                pass
             else:
                 self.tab1.diagnostics5.setDisabled(False)
-                print 'Te_TXCS data:\t .... .... .... OK'
+                # print 'Te_TXCS data:\t .... .... .... OK'
 
         elif self.par['Profile'] == 'Ti':
             # CXRS
             try:
                 mdsopen('CXRS_EAST', self.par['Shot'])
                 mdsvalue('dim_of(Ti_CXRS_T)')
-            except RuntimeError:
-                print 'Ti_CXRS_T data:\t .... .... .... N/A'
+            except RuntimeError, e:
+                print e
+                # print 'Ti_CXRS_T data:\t .... .... .... N/A'
+                pass
             else:
                 self.tab1.diagnostics1.setDisabled(False)
-                print 'Ti_CXRS_T data:\t .... .... .... OK'
+                # print 'Ti_CXRS_T data:\t .... .... .... OK'
 
             # TXCS
             try:
@@ -822,52 +831,61 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 print mdsvalue('dim_of(Ti_TXCS)')
             except RuntimeError, e:
                 print e
-                print 'Ti_TXCS data:\t .... .... .... N/A'
+                # print 'Ti_TXCS data:\t .... .... .... N/A'
+                pass
             else:
                 self.tab1.diagnostics3.setDisabled(False)
-                print 'Ti_TXCS data:\t .... .... .... OK'
+                # print 'Ti_TXCS data:\t .... .... .... OK'
 
         elif self.par['Profile'] == 'ne':
             # Reflectometry
             try:
                 mdsopen('ReflJ_EAST', self.par['Shot'])
                 mdsvalue('dim_of(ne_ReflJ)')
-            except RuntimeError:
-                print 'ne_TeflJ data:\t .... .... .... N/A'
+            except RuntimeError, e:
+                print e
+                # print 'ne_TeflJ data:\t .... .... .... N/A'
+                pass
             else:
                 self.tab1.diagnostics1.setDisabled(False)
-                print 'ne_ReflJ data:\t .... .... .... OK'
+                # print 'ne_ReflJ data:\t .... .... .... OK'
 
             # Thomson_core
             try:
                 mdsopen('TS_EAST', self.par['Shot'])
                 mdsvalue('dim_of(ne_coreTS)')
-            except RuntimeError:
-                print 'ne_coreTS data:\t .... .... .... N/A'
+            except RuntimeError, e:
+                print e
+                # print 'ne_coreTS data:\t .... .... .... N/A'
+                pass
             else:
                 self.tab1.diagnostics2.setDisabled(False)
-                print 'ne_coreTS data:\t .... .... .... OK'
+                # print 'ne_coreTS data:\t .... .... .... OK'
 
             # POINT
             try:
                 mdsopen('POINT_Analy', self.par['Shot'])
                 mdsvalue('dim_of(\\ne_POINT,0)')
-            except RuntimeError:
-                print 'ne_POINT data:\t .... .... .... N/A'
+            except RuntimeError, e:
+                print e
+                # print 'ne_POINT data:\t .... .... .... N/A'
+                pass
             else:
                 self.tab1.diagnostics4.setDisabled(False)
-                print 'ne_POINT data:\t .... .... .... OK'
+                # print 'ne_POINT data:\t .... .... .... OK'
 
         elif self.par['Profile'] == 'Vt':
             # CXRS
             try:
                 mdsopen('CXRS_EAST', self.par['Shot'])
                 mdsvalue('dim_of(Vt_CXRS_T)')
-            except RuntimeError:
-                print 'Vt_CXRS_T data:\t .... .... .... N/A'
+            except RuntimeError, e:
+                print e
+                # print 'Vt_CXRS_T data:\t .... .... .... N/A'
+                pass
             else:
                 self.tab1.diagnostics1.setDisabled(False)
-                print 'Tt_CXRS_T data:\t .... .... .... OK'
+                # print 'Tt_CXRS_T data:\t .... .... .... OK'
 
             # TXCS
             try:
@@ -875,10 +893,11 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
                 print mdsvalue('dim_of(Vt_TXCS)')
             except RuntimeError, e:
                 print e
-                print 'Vt_TXCS data:\t .... .... .... N/A'
+                # print 'Vt_TXCS data:\t .... .... .... N/A'
+                pass
             else:
                 self.tab1.diagnostics2.setDisabled(False)
-                print 'Vt_TXCS data:\t .... .... .... OK'
+                # print 'Vt_TXCS data:\t .... .... .... OK'
 
     def initial_diagnostics(self):
         if self.par['Profile'] == 'Te':

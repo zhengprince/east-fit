@@ -255,7 +255,7 @@ class MplCanvas(FigureCanvas):
             return True
 
         # print '\n'.join(['%s:%s' % item for item in self.d1[1].__dict__.items()])
-        print '\n'.join(['%s:%s' % item for item in event.artist.__dict__.items()])
+        # print '\n'.join(['%s:%s' % item for item in event.artist.__dict__.items()])
         self.artist_label = event.artist.__getattribute__('_label')
         for junk, ind in enumerate(event.ind):
             line = event.artist
