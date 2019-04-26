@@ -86,7 +86,7 @@ class MplCanvas(FigureCanvas):
             # print "globalvar.value['processed_d1_'+s]\n", globalvar.value['processed_d1_'+s], "\n\n\n\n"
             if self.d1:
                 self.ax.lines.remove(self.d1)
-            if 1:  # globalvar.value['diagnostic1_err'].any():
+            if 0:  # globalvar.value['diagnostic1_err'].any():
                 self.d1 = self.ax.errorbar(globalvar.value['processed_d1_' + s].x[0],
                                            globalvar.value['processed_d1_' + s].y,
                                            yerr=globalvar.value['diagnostic1_err'], fmt='yd', label=label[0],

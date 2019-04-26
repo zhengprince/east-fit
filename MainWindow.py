@@ -530,17 +530,25 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         if self.par['Diag1']:
             self.lShowData.setText('MDSPLUS')
             if self.tab1.rbMdsPlus_2.isChecked():
-                self.g = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics1.text())
+                self.g, e = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics1.text())
             elif self.tab1.rbFile_2.isChecked():
-                self.g = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics1.text(),
-                                                            file_mds=True)
+                self.g, e = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics1.text(),
+                                                               file_mds=True)
                 self.lShowEfitTree.setText('FILE')
-            self.plot_data(self.par)
+            self.statusbarPrint(e)
+            if e == 100:
+                self.plot_data(self.par)
+            else:
+                pass
         else:
             if self.mplCanvas.canvas.d1:
-                self.g = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics1.text(),
-                                                            default=False)
-                self.plot_data(self.par)
+                self.g, e = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics1.text(),
+                                                               default=False)
+                self.statusbarPrint(e)
+                if e == 100:
+                    self.plot_data(self.par)
+                else:
+                    pass
             else:
                 pass
 
@@ -549,17 +557,25 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         if self.par['Diag2']:
             self.lShowData.setText('MDSPLUS')
             if self.tab1.rbMdsPlus_2.isChecked():
-                self.g = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics2.text())
+                self.g, e = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics2.text())
             elif self.tab1.rbFile_2.isChecked():
-                self.g = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics2.text(),
-                                                            file_mds=True)
+                self.g, e = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics2.text(),
+                                                               file_mds=True)
                 self.lShowEfitTree.setText('FILE')
-            self.plot_data(self.par)
+            self.statusbarPrint(e)
+            if e == 100:
+                self.plot_data(self.par)
+            else:
+                pass
         else:
             if self.mplCanvas.canvas.d2:
-                self.g = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics2.text(),
-                                                            default=False)
-                self.plot_data(self.par)
+                self.g, e = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics2.text(),
+                                                               default=False)
+                self.statusbarPrint(e)
+                if e == 100:
+                    self.plot_data(self.par)
+                else:
+                    pass
             else:
                 pass
 
@@ -568,17 +584,25 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         if self.par['Diag3']:
             self.lShowData.setText('MDSPLUS')
             if self.tab1.rbMdsPlus_2.isChecked():
-                self.g = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics3.text())
+                self.g, e = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics3.text())
             elif self.tab1.rbFile_2.isChecked():
-                self.g = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics3.text(),
-                                                            file_mds=True)
+                self.g, e = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics3.text(),
+                                                               file_mds=True)
                 self.lShowEfitTree.setText('FILE')
-            self.plot_data(self.par)
+            self.statusbarPrint(e)
+            if e == 100:
+                self.plot_data(self.par)
+            else:
+                pass
         else:
             if self.mplCanvas.canvas.d3:
-                self.g = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics3.text(),
-                                                            default=False)
-                self.plot_data(self.par)
+                self.g, e = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics3.text(),
+                                                               default=False)
+                self.statusbarPrint(e)
+                if e == 100:
+                    self.plot_data(self.par)
+                else:
+                    pass
             else:
                 pass
 
@@ -587,17 +611,25 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         if self.par['Diag4']:
             self.lShowData.setText('MDSPLUS')
             if self.tab1.rbMdsPlus_2.isChecked():
-                self.g = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics4.text())
+                self.g, e = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics4.text())
             elif self.tab1.rbFile_2.isChecked():
-                self.g = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics4.text(),
-                                                            file_mds=True)
+                self.g, e = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics4.text(),
+                                                               file_mds=True)
                 self.lShowEfitTree.setText('FILE')
-            self.plot_data(self.par)
+            self.statusbarPrint(e)
+            if e == 100:
+                self.plot_data(self.par)
+            else:
+                pass
         else:
             if self.mplCanvas.canvas.d4:
-                self.g = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics4.text(),
-                                                            default=False)
-                self.plot_data(self.par)
+                self.g, e = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics4.text(),
+                                                               default=False)
+                self.statusbarPrint(e)
+                if e == 100:
+                    self.plot_data(self.par)
+                else:
+                    pass
             else:
                 pass
 
@@ -606,17 +638,21 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         if self.par['Diag5']:
             self.lShowData.setText('MDSPLUS')
             if self.tab1.rbMdsPlus_2.isChecked():
-                self.g = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics5.text())
+                self.g, e = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics5.text())
             elif self.tab1.rbFile_2.isChecked():
-                self.g = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics5.text(),
-                                                            file_mds=True)
+                self.g, e = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics5.text(),
+                                                               file_mds=True)
                 self.lShowEfitTree.setText('FILE')
-            self.plot_data(self.par)
+            self.statusbarPrint(e)
+            if e == 100:
+                self.plot_data(self.par)
         else:
             if self.mplCanvas.canvas.d5:
-                self.g = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics5.text(),
-                                                            default=False)
-                self.plot_data(self.par)
+                self.g, e = self.importData.mds_mds_n_file_mds(self.g, self.par, self.tab1.diagnostics5.text(),
+                                                               default=False)
+                self.statusbarPrint(e)
+                if e == 100:
+                    self.plot_data(self.par)
             else:
                 pass
 
@@ -672,7 +708,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
                   '<body>'
                   '<p><font size="18" face="Lucida Grande"><b>EAST fit</b></font></p>'
                   '<p><font size="5" face="Lucida Grande"><b>A Profile Fitting Tool for EAST</b></font></p>'
-                  '<p><font face="Lucida Grande">v0.4a</font></p>'
+                  '<p><font face="Lucida Grande">v0.5a</font></p>'
                   '<hr>'
                   '<p><font face="Lucida Grande">If you have any questions or advices,</font></p>'
                   '<p><font face="Lucida Grande">please contact with:</font></p>'
@@ -891,15 +927,29 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.g.library['processed_psi'] = Data()
 
     def mds(self):
-        self.statusBar.showMessage('CONNECTING THE MDS+ SERVER...')
+        self.statusbarPrint(101)
         try:
             mdsconnect('202.127.204.12')
-            self.statusBar.showMessage('MDS+ SERVER CONNECTED!')
+            self.statusbarPrint(102)
         except Exception, e:
             print Exception, ":", e
-            self.statusBar.showMessage('CANNOT CONNECT THE MDS+ SERVER!')
+            self.statusbarPrint(103)
             self.tab1.rbMdsPlus.setDisabled(True)
             self.tab1.rbMdsPlus_2.setDisabled(True)
+
+    def statusbarPrint(self, error_code):
+        if error_code == 100:
+            self.statusBar.showMessage('EVERYTHING GOES WELL')
+        if error_code == 101:
+            self.statusBar.showMessage('CONNECTING THE MDS+ SERVER...')
+        if error_code == 102:
+            self.statusBar.showMessage('MDS+ SERVER CONNECTED!')
+        if error_code == 103:
+            self.statusBar.showMessage('CANNOT CONNECT THE MDS+ SERVER!')
+        if error_code == 104:
+            self.statusBar.showMessage('NO DATA OR SOMETHING WRONG!')
+        if error_code == 105:
+            self.statusBar.showMessage('DATA LENGTH NOT MATCH!')
 
     def on_actionSetting_clicked(self):
         dlg = Setting(self.par, parent=self)
